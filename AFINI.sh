@@ -11,8 +11,8 @@
 
 ################## VARIABLES CON DATOS DE OTRO LADO ##################
 		STATUSINST="LISTA"
-		GRUPO12="./GRUPO12"
-		CONFDIR="$GRUPO12/conf"
+		GRUPO12="/GRUPO12"
+		CONFDIR=".$GRUPO12/conf"
 		CONFIGFILE="$CONFDIR/afinstall.conf"
 ######################################################################
 
@@ -68,7 +68,7 @@ function examPath
 
 function verificarPermisos
 {
-	filesToCheckPerms=("$GRALOG" "$fileExistsFUNC" "./AFREC.sh" "$BINDIR")
+	filesToCheckPerms=("$GRALOG" "$fileExistsFUNC" "./AFREC.sh" "$BINDIR" "$MAEDIR" "$NOVEDIR" "$ACEPDIR" "$PROCDIR" "$REPODIR" "$LOGDIR" "$RECHDIR")
 	for func in ${filesToCheckPerms[*]}
 	do
 		if ! [ -x "$func" ]; then
@@ -79,12 +79,27 @@ function verificarPermisos
 				exit 1
 			fi
 		fi
+		if ! [ -r "$func" ]; then
+			echo "no tiene permisos $func"
+			chmod +r "$func"
+			if ! [ -r "$func" ]; then
+				echo "FALLO al darle permisos de lectura al archivo $func"
+				exit 1
+			fi
+		fi
+		if ! [ -w "$func" ]; then
+			echo "no tiene permisos $func"
+			chmod +w "$func"
+			if ! [ -w "$func" ]; then
+				echo "FALLO al darle permisos de escritura al archivo $func"
+				exit 1
+			fi
+		fi
 	done
 
 	for func in $(ls "$BINDIR")
 	do
 		fileToActPerm="$BINDIR/$func"
-		echo "$fileToActPerm"
 		if ! [ -x "$fileToActPerm" ]; then
 			echo "no tiene permisos $fileToActPerm"
 			chmod +x "$fileToActPerm"
@@ -94,15 +109,32 @@ function verificarPermisos
 			fi
 		fi
 	done
+
+	filesToCheckPermsAux=("$BINDIR" "$MAEDIR" "$NOVEDIR" "$ACEPDIR" "$PROCDIR" "$REPODIR" "$LOGDIR" "$RECHDIR")
+	for directory in ${filesToCheckPermsAux[*]}
+	do
+		for fileToActPerm in $(ls "$directory")
+		do
+			fileToActPerm="$directory/$fileToActPerm"
+			if ! [ -r "$fileToActPerm" ]; then
+				echo "no tiene permisos $fileToActPerm"
+				chmod +r "$fileToActPerm"
+				if ! [ -r "$fileToActPerm" ]; then
+					echo "FALLO al darle permisos de lectura al archivo $fileToActPerm"
+					exit 1
+				fi
+			fi
+		done
+	done
 }
 
 ###########################################################
 clear
 echo "INICIO AFINI"
-echo $AFINI_STATUS
+echo "$AFINI_STATUS"
 ## TODO: VER COMO hacer que se inicie una sola vez
 if [ "$AFINI_STATUS" = "INICIALIZADO" ]; then
-	echo $MESSAGE_READY_YET
+	echo "$MESSAGE_READY_YET"
 	$GRALOG "AFINI" "$MESSAGE_READY_YET" "ERR"
 	exit 1
 fi
@@ -120,7 +152,7 @@ for line in $(cat $CONFIGFILE); do
 	variableInConfig=$(echo "$line" | sed "s/\([^=]*\)=\([^=]*\).*/\1/g")
 	valueInConfig=$(echo "$line" | sed "s/\([^=]*\)=\([^=]*\).*/\2/g")
 	if [[ $valueInConfig == /G* ]]; then
-		valueInConfig=".$valueInConfig"
+		valueInConfig="$GRUPO$valueInConfig"
 	fi
 export "$variableInConfig"="$valueInConfig"
 done
@@ -151,12 +183,12 @@ if [ $activarAFREC = "no" ]; then
 	#TODO explciar como arrancar con ARRANCAR
 	echo "Para arrancarlo puede ejecutar ARRANCAR AFREC "
 else
-	afrecRunning=$(ps | grep "AFREC" | sed "s/\([0-9]*\).*/\1/g")
+	afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
 	if [ "$afrecRunning" = "" ]; then
 		#TODO ejecutar el AFREC
 		echo "Se lanza AFREC ..."
 		./AFREC.sh &
-		afrecRunning=$(ps | grep "AFREC" | sed "s/\([0-9]*\).*/\1/g")
+		afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
 	else
 		echo "AFREC ya estaba corriendo."
 	fi
@@ -166,7 +198,7 @@ else
 	#TODO actualizar como correr el DETENER
 	echo "Para detener el proceso AFREC ejecute: DETENER AFREC"
 fi
-export AFINI_STATUS
-
+export AFINI_STATUS="INICIALIZADO"
+echo $AFINI_STATUS
 echo "FIN AFINI"
-exit 0
+exit 1
