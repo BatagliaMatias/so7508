@@ -20,6 +20,7 @@
 		GRALOG="./GraLog.sh"
 		FUCTIONSDIR="./functions"
 		fileExistsFUNC="$FUCTIONSDIR/fileExists.sh"
+		verifyEnvironment="$FUCTIONSDIR/verifyEnvironment.sh"
 		CMD="AFINI"
 #-------------------- EXPORT VARIABLES -------------------#
 		export GRALOG
@@ -130,6 +131,7 @@ function verificarPermisos
 
 ###########################################################
 clear
+verifyEnvironment
 echo "INICIO AFINI"
 echo "$AFINI_STATUS"
 ## TODO: VER COMO hacer que se inicie una sola vez
