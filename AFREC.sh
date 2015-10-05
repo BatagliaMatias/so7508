@@ -12,6 +12,7 @@ DIAS_LIMITE=365
 RUN_AFUMB=1
 AFUMB="./AFUMB.sh" 
 while [ true ]
+
 do
 	let CICLO=CICLO+1
 	echo "Ciclo numero:$CICLO" #1 Grabar en el log el numero de ciclo.
