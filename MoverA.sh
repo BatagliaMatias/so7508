@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# You need to add this line below.
+#MoverA
+IFS=$'\n' 
+
+ORIGEN=$1
+DESTINO=$2
+#PROCESO=$3
+
+
+if [ ! -f "$ORIGEN" ];then
+echo "Archivo origen inexistente"
+exit 1
+fi
+if [ ! -d "$DESTINO" ];then
+echo "Directorio destino inexistente"
+exit 2
+fi
+
+
+NOMBRE_ARCHIVO=${ORIGEN##*/}
+#echo "VARIABLE DEPURADA $DEPURADA"
+
+
+COPIA=$DESTINO/$ORIGEN
+
+if [ ! -f "$COPIA" ];then
+	#echo "MOVER STANDARD"
+	mv $ORIGEN $DESTINO/
+else
+	DUPLICADO='/DUP'	
+	CARPETA_DUPLICADO=${DESTINO}$DUPLICADO
+	if [ ! -d "$CARPETA_DUPLICADO" ]; then
+		mkdir $CARPETA_DUPLICADO
+		echo "Carpeta $CARPETA_DUPLICADO creada"
+		mv $ORIGEN $CARPETA_DUPLICADO/
+	#	echo "MOVER DUPLICADO"
+	else
+		#CHECKDIR=$CARPETA_DUPLICADO/$ORIGEN
+		CHECKDIR=$CARPETA_DUPLICADO/$NOMBRE_ARCHIVO
+		CHECKDIRAUX=$CHECKDIR
+	#	echo "DIRECCION DUPLICADO $CHECKDIR"
+		CONTADOR=0
+		while [ -f "$CHECKDIR" ]; do
+	#		echo "ENTRO AL WHILE"	
+	#		echo "PATH A PUNTO DE MIRAR: $CHECKDIR"
+			CONTADOR=`expr $CONTADOR + 1`
+			TERMINACION='.'"$CONTADOR"	
+			CHECKDIR=${CHECKDIRAUX}$TERMINACION
+		done
+#		RENOMBRADO=$ORIGEN$TERMINACION
+		RENOMBRADO=$NOMBRE_ARCHIVO$TERMINACION
+		mv $ORIGEN $RENOMBRADO 
+		mv $RENOMBRADO $CARPETA_DUPLICADO/
+	fi
+fi
