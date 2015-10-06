@@ -10,20 +10,15 @@
 ###########################################################
 
 ################## VARIABLES CON DATOS DE OTRO LADO ##################
-		STATUSINST="LISTA"
-		GRUPO12="/GRUPO12"
-		CONFDIR=".$GRUPO12/conf"
+		CONFDIR="./GRUPO12/conf"
 		CONFIGFILE="$CONFDIR/afinstall.conf"
 ######################################################################
 
 ################## VARIABLES DE AMBIENTE ##################
-		GRALOG="./GraLog.sh"
+		export GRALOG="./GraLog.sh"
 		FUCTIONSDIR="./functions"
 		fileExistsFUNC="$FUCTIONSDIR/fileExists.sh"
-		verifyEnvironment="$FUCTIONSDIR/verifyEnvironment.sh"
 		CMD="AFINI"
-#-------------------- EXPORT VARIABLES -------------------#
-		export GRALOG
 ###########################################################
 
 ################## MESSAGES ###############################
@@ -32,6 +27,29 @@
 ###########################################################
 
 ################## LOCAL FUNCTIONS ########################
+function installComplete
+{
+	### LEVANTO LAS VARIABLES DEL ARCHIVO DE CONFIGURACION
+	IFS='
+	'
+	varsToCheck=("GRUPO" "BINDIR" "MAEDIR" "NOVEDIR" "DATASIZE" "ACEPDIR" "PROCDIR" "REPODIR" "LOGDIR" "LOGEXT" "LOGSIZE" "RECHDIR")
+	for variableConf in ${varsToCheck[*]}
+	do
+		line=$(grep "$variableConf=" "$CONFIGFILE")
+		if [ "$line" != "" ]; then
+			variableInConfig=$(echo "$line" | sed "s/\([^=]*\)=\([^=]*\).*/\1/g")
+			valueInConfig=$(echo "$line" | sed "s/\([^=]*\)=\([^=]*\).*/\2/g")
+			if [[ $valueInConfig == /G* ]]; then
+				valueInConfig="$GRUPO$valueInConfig"
+			fi
+			export "$variableInConfig"="$valueInConfig"
+		else
+			return "1"
+		fi
+	done
+	return "0"
+}
+
 function existsAllFiles
 {
 	filesToCheck=("$CONFIGFILE" "$MAEDIR/CdP.mae" "$MAEDIR/CdA.mae" "$MAEDIR/agentes.mae" "$MAEDIR/umbrales.tab")
@@ -40,12 +58,12 @@ function existsAllFiles
 		$fileExistsFUNC "$item" $CMD
 		local status=$?
     	if [ $status -ne 0 ]; then
-    		#### TODO: MEJORAR EL MENSAJE YA QUE FALTAN LOS ARCHIVOS NECESARIOS
     	    echo "$MESSAGE_FILE_NOT_FOUND $item"
-    	    $GRALOG "AFINI" "$MESSAGE_FILE_NOT_FOUND $item" "ERR"
-    	    exit 1
+    	    $GRALOG "$CMD" "$MESSAGE_FILE_NOT_FOUND $item" "ERR"
+    	    return "1"
     	fi
 	done
+	return "0"
 }
 
 function examPath
@@ -54,14 +72,14 @@ function examPath
 	path="$2"
 	printArchivos="$3"
 	mensaje="$description $path"
-	$GRALOG "AFINI" "$mensaje" "INFO"
+	$GRALOG "$CMD" "$mensaje" "INFO"
 	echo "$mensaje"
 	if [ "$printArchivos" = "true" ]; then
 		archivos=$(ls $path)
 		for line in $archivos; do
 			lineFile="		|------> $line"
 			echo $lineFile
-			$GRALOG "AFINI" "$lineFile" "INFO"
+			$GRALOG "$CMD" "$lineFile" "INFO"
 		done
 	fi
 
@@ -73,28 +91,30 @@ function verificarPermisos
 	for func in ${filesToCheckPerms[*]}
 	do
 		if ! [ -x "$func" ]; then
-			echo "no tiene permisos $func"
+			
 			chmod +x "$func"
 			if ! [ -x "$func" ]; then
 				echo "FALLO al darle permisos de ejecucion al archivo $func"
-				exit 1
+				return "1"
 			fi
+			echo "Se le dio permisos de ejecucion a $func"
 		fi
 		if ! [ -r "$func" ]; then
-			echo "no tiene permisos $func"
 			chmod +r "$func"
 			if ! [ -r "$func" ]; then
 				echo "FALLO al darle permisos de lectura al archivo $func"
-				exit 1
+				return "1"
 			fi
+			echo "Se le dio permisos de lectura a $func"
 		fi
 		if ! [ -w "$func" ]; then
 			echo "no tiene permisos $func"
 			chmod +w "$func"
 			if ! [ -w "$func" ]; then
 				echo "FALLO al darle permisos de escritura al archivo $func"
-				exit 1
+				return "1"
 			fi
+			echo "Se le dio permisos de escritura a $func"
 		fi
 	done
 
@@ -102,12 +122,12 @@ function verificarPermisos
 	do
 		fileToActPerm="$BINDIR/$func"
 		if ! [ -x "$fileToActPerm" ]; then
-			echo "no tiene permisos $fileToActPerm"
 			chmod +x "$fileToActPerm"
 			if ! [ -x "$fileToActPerm" ]; then
 				echo "FALLO al darle permisos de ejecucion al archivo $fileToActPerm"
-				exit 1
+				return "1"
 			fi
+			echo "Se le dio permisos de ejecucion a $fileToActPerm"
 		fi
 	done
 
@@ -118,89 +138,80 @@ function verificarPermisos
 		do
 			fileToActPerm="$directory/$fileToActPerm"
 			if ! [ -r "$fileToActPerm" ]; then
-				echo "no tiene permisos $fileToActPerm"
 				chmod +r "$fileToActPerm"
 				if ! [ -r "$fileToActPerm" ]; then
 					echo "FALLO al darle permisos de lectura al archivo $fileToActPerm"
-					exit 1
+					return "1"
 				fi
+				echo "FALLO al darle permisos de lectura al archivo $fileToActPerm"
 			fi
 		done
 	done
+	return "0"
 }
 
 ###########################################################
 clear
-verifyEnvironment
 echo "INICIO AFINI"
-echo "$AFINI_STATUS"
-## TODO: VER COMO hacer que se inicie una sola vez
-if [ "$AFINI_STATUS" = "INICIALIZADO" ]; then
+if [ "$AFINI_STATUS" == "INICIALIZADO" ]; then
 	echo "$MESSAGE_READY_YET"
-	$GRALOG "AFINI" "$MESSAGE_READY_YET" "ERR"
-	exit 1
-fi
-
-## TODO: VER COMO MOSTRAR QUE LE FALTA DE LA INSTALACION, hoy solo chequeo que el archivo de configuracion exista
-if [ "$STATUSINST" != "LISTA" ]; then
-	exit 1
-fi
-
-
-### LEVANTO LAS VARIABLES DEL ARCHIVO DE CONFIGURACION
-IFS='
-'
-for line in $(cat $CONFIGFILE); do
-	variableInConfig=$(echo "$line" | sed "s/\([^=]*\)=\([^=]*\).*/\1/g")
-	valueInConfig=$(echo "$line" | sed "s/\([^=]*\)=\([^=]*\).*/\2/g")
-	if [[ $valueInConfig == /G* ]]; then
-		valueInConfig="$GRUPO$valueInConfig"
-	fi
-export "$variableInConfig"="$valueInConfig"
-done
-
-verificarPermisos
-
-AFINI_STATUS="INICIALIZADO"
-existsAllFiles
-examPath "Directorio de Configuración:" "$CONFDIR" "true"
-examPath "Directorio de Ejecutables:" "$BINDIR" "true"
-examPath "Directorio de Maestros y Tablas:" "$MAEDIR" "true"
-examPath "Directorio de recepción de archivos de llamadas:" "$NOVEDIR"
-examPath "Directorio de Archivos de llamadas Aceptados:" "$ACEPDIR"
-examPath "Directorio de Archivos de llamadas Sospechosas:" "$PROCDIR"
-examPath "Directorio de Archivos de Reportes de llamadas:" "$REPODIR"
-examPath "Directorio de Archivos de Log:" "$LOGDIR" "true"
-examPath "Directorio de Archivos Rechazados:" "$RECHDIR"
-examPath "Estado del Sistema:" "$AFINI_STATUS"
-
-
-while [ -z $activarAFREC ]
-do
-	read -p "¿Desea efectuar la activación de AFREC? (Si – No) " activarAFREC
-	activarAFREC=$(echo $activarAFREC | grep '^[Ss][Ii]$\|^[Nn][Oo]$' | tr '[:upper:]' '[:lower:]')
-done
-if [ $activarAFREC = "no" ]; then
-	echo "No se inicio el comando AFREC"
-	#TODO explciar como arrancar con ARRANCAR
-	echo "Para arrancarlo puede ejecutar ARRANCAR AFREC "
+	$GRALOG "$CMD" "$MESSAGE_READY_YET" "ERR"
 else
-	afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
-	if [ "$afrecRunning" = "" ]; then
-		#TODO ejecutar el AFREC
-		echo "Se lanza AFREC ..."
-		./AFREC.sh &
-		afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
-	else
-		echo "AFREC ya estaba corriendo."
-	fi
-	mensajeAfrecCorriendo="AFREC corriendo bajo el no.: $afrecRunning"
-	echo "$mensajeAfrecCorriendo"
-	$GRALOG "AFINI" "$mensajeAfrecCorriendo" "INFO"
-	#TODO actualizar como correr el DETENER
-	echo "Para detener el proceso AFREC ejecute: DETENER AFREC"
+		installComplete
+		environmentOk="$?"
+		if [ "$environmentOk" != "0" ]; then
+		       echo "FALTA COMPLETAR INSTALACION - Ejecutar: ' AfInstal.sh'"
+		else
+				verificarPermisos
+				pemisosOk="$?"
+				if [ "$pemisosOk" != "0" ]; then
+				       echo "FALLARON LOS PERMISOS"
+				else
+						existsAllFiles
+						todosExiten="$?"
+						if [ "$todosExiten" != "0" ]; then
+						       echo "FALTAN ARCHIVOS"
+						else
+								AFINI_STATUS="INICIALIZADO"
+								examPath "Directorio de Configuración:" "$CONFDIR" "true"
+								examPath "Directorio de Ejecutables:" "$BINDIR" "true"
+								examPath "Directorio de Maestros y Tablas:" "$MAEDIR" "true"
+								examPath "Directorio de recepción de archivos de llamadas:" "$NOVEDIR"
+								examPath "Directorio de Archivos de llamadas Aceptados:" "$ACEPDIR"
+								examPath "Directorio de Archivos de llamadas Sospechosas:" "$PROCDIR"
+								examPath "Directorio de Archivos de Reportes de llamadas:" "$REPODIR"
+								examPath "Directorio de Archivos de Log:" "$LOGDIR" "true"
+								examPath "Directorio de Archivos Rechazados:" "$RECHDIR"
+								examPath "Estado del Sistema:" "$AFINI_STATUS"
+
+								while [ -z $activarAFREC ]
+								do
+									read -p "¿Desea efectuar la activación de AFREC? (Si – No) " activarAFREC
+									activarAFREC=$(echo $activarAFREC | grep '^[Ss][Ii]$\|^[Nn][Oo]$' | tr '[:upper:]' '[:lower:]')
+								done
+								if [ $activarAFREC = "no" ]; then
+									echo "No se inicio el comando AFREC"
+									#TODO explciar como arrancar con ARRANCAR
+									echo "Para arrancarlo puede ejecutar ARRANCAR AFREC "
+								else
+									afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
+									if [ "$afrecRunning" = "" ]; then
+										#TODO ejecutar el AFREC
+										echo "Se lanza AFREC ..."
+										$BINDIR/AFREC.sh&
+										afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
+									else
+										echo "AFREC ya estaba corriendo."
+									fi
+									mensajeAfrecCorriendo="AFREC corriendo bajo el no.: $afrecRunning"
+									echo "$mensajeAfrecCorriendo"
+									$GRALOG "$CMD" "$mensajeAfrecCorriendo" "INFO"
+									#TODO actualizar como correr el DETENER
+									echo "Para detener el proceso AFREC ejecute: detener AFREC"
+								fi
+								export AFINI_STATUS
+								echo "FIN AFINI"
+						fi
+				fi
+		fi
 fi
-export AFINI_STATUS="INICIALIZADO"
-echo $AFINI_STATUS
-echo "FIN AFINI"
-exit 1
