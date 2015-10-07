@@ -2,10 +2,10 @@
 
 CICLO=0
 SLEEPTIME=10
-MAEDIR=MAEDIR
+#MAEDIR=MAEDIR
 ARCH_CENTRALES='centrales.csv'
-NOVEDIR=NOVEDIR
-ACEPDIR=ACEPDIR
+#NOVEDIR=NOVEDIR
+#ACEPDIR=ACEPDIR
 SEPARATOR_MAEDIR=";"
 TODAY=date +%Y%m%d >> /dev/null 2>&1
 DIAS_LIMITE=365
@@ -15,33 +15,35 @@ AFUMB="./AFUMB.sh"
 while [ true ]
 do
 	let CICLO=CICLO+1
-	echo "Ciclo numero:$CICLO" #1 Grabar en el log el numero de ciclo.
+	$GRALOG "AFREC" "Ciclo numero:$CICLO" "INFO"
+	#1 Grabar en el log el numero de ciclo.
 
 	#2 Chequeo si hay archivos en NOVEDIR
-	if [ ! -d $NOVEDIR ];
-		then echo Directorio $NOVEDIR no existe y se va a crear
-		mkdir -p $NOVEDIR
+	if [ ! -d "$NOVEDIR" ];
+		then echo "Directorio $NOVEDIR no existe y se va a crear"
+		mkdir -p "$NOVEDIR"
 	fi
 
-	if [ ! -d $ACEPDIR ];
-		then echo Directorio $ACEPDIR no existe y se va a crear
-		mkdir -p $ACEPDIR
+	if [ ! -d "$ACEPDIR" ];
+		then echo "Directorio $ACEPDIR no existe y se va a crear"
+		mkdir -p "$ACEPDIR"
 	fi
 
-	if [ ! -d $MAEDIR ];
-		then echo Directorio $MAEDIR no existe y se va a crear
-		mkdir -p $MAEDIR
+	if [ ! -d "$MAEDIR" ];
+		then echo "Directorio $MAEDIR no existe y se va a crear"
+		mkdir -p "$MAEDIR"
 	fi
 
-	if find $NOVEDIR -maxdepth 0 -empty | read v; 
-		then echo $NOVEDIR "esta vacio"; 
+	if find "$NOVEDIR" -maxdepth 0 -empty | read v; 
+		then echo "$NOVEDIR esta vacio"; 
 	else
 		#3 Chequeo que solo sean archivos de texto (elimina vacios)  
 		for FILE in $NOVEDIR/*
 		do
 			TYPE=$(file "$FILE" | cut -d' ' -f2)
 			if [ "$TYPE" != "ASCII" ]
-				then echo $FILE no es texto #Mover Archivo que no es texto
+				then echo "$FILE no es texto"
+				 #Mover Archivo que no es texto
 			fi
 		done
 
@@ -114,3 +116,5 @@ do
 	sleep $SLEEPTIME
 
 done
+PID=$(pgrep "$1")
+

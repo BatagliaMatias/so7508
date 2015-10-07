@@ -4,8 +4,9 @@ GRALOG="./GraLog.sh"
 
 
 function verificarInicializacionDeAmbiente() {
+echo "$CONFDIR"
 
-	if [[ $CONFDIR == "" ]]
+	if [[ "$CONFDIR" == "" ]]
 	then
 	       echo No se encuentra inicializada la variable CONFDIR
 	       $GRALOG "Arrancar" "No se encuentra inicializada la variable CONFDIR" "ERR"
@@ -78,7 +79,7 @@ fi
 
 
 #obtengo el pid
-PID=`ps | grep "$1" | head -1 | awk '{print $1 }'`
+PID=`ps | grep "$1" | head -1 | awk '{print "$1" }'`
 
 #Verifico que no este corriendo
 if [[ $PID != "" ]]
@@ -89,6 +90,7 @@ then
 fi
 
 #ejecuto el proceso
+
 nohup $1 > /dev/null 2>&1 &
 PID=$!
 

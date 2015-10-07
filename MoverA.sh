@@ -24,7 +24,7 @@ NOMBRE_ARCHIVO=${ORIGEN##*/}
 
 
 COPIA=$DESTINO/$ORIGEN
-
+$GRALOG "MOVER" "estoy moviendo algo" "INFO"
 if [ ! -f "$COPIA" ];then
 	#echo "MOVER STANDARD"
 	mv $ORIGEN $DESTINO/

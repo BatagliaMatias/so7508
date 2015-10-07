@@ -192,7 +192,7 @@ else
 								if [ $activarAFREC = "no" ]; then
 									echo "No se inicio el comando AFREC"
 									#TODO explciar como arrancar con ARRANCAR
-									echo "Para arrancarlo puede ejecutar ARRANCAR AFREC "
+									echo "Para arrancarlo puede ejecutar './arrancar.sh AFREC.sh' "
 								else
 									afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
 									if [ "$afrecRunning" = "" ]; then
@@ -207,7 +207,7 @@ else
 									echo "$mensajeAfrecCorriendo"
 									$GRALOG "$CMD" "$mensajeAfrecCorriendo" "INFO"
 									#TODO actualizar como correr el DETENER
-									echo "Para detener el proceso AFREC ejecute: detener AFREC"
+									echo "Para detener el proceso AFREC ejecute: './detener.sh AFREC.sh"
 								fi
 								export AFINI_STATUS
 								echo "FIN AFINI"
