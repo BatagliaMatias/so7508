@@ -5,7 +5,7 @@ then
        exit 1
 fi
 
-environmentOk=$(./functions/verifyEnvironment.sh "$1")
+environmentOk=$("$BINDIR"/verifyEnvironment.sh "$1")
 if [ "$environmentOk"  != "0" ]; then
        echo "FALTA INICIALIZAR EL ENTORNO - Ejecutar: 'source AFINI.sh'"
        exit 1

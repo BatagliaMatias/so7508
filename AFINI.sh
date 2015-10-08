@@ -16,8 +16,6 @@
 
 ################## VARIABLES DE AMBIENTE ##################
 		export GRALOG="./GraLog.sh"
-		FUCTIONSDIR="./functions"
-		fileExistsFUNC="$FUCTIONSDIR/fileExists.sh"
 		CMD="AFINI"
 ###########################################################
 
@@ -52,16 +50,15 @@ function installComplete
 
 function existsAllFiles
 {
-	filesToCheck=("$CONFIGFILE" "$MAEDIR/CdP.mae" "$MAEDIR/CdA.mae" "$MAEDIR/agentes.mae" "$MAEDIR/umbrales.tab")
+	filesToCheck=("$CONFIGFILE" "$MAEDIR/CdP.mae" "$MAEDIR/CdA.mae" "$MAEDIR/agentes.mae" "$MAEDIR/umbrales.tab" "$BINDIR/AFREC.sh" "$BINDIR/AFUMB.sh" "$BINDIR/arrancar.sh" "$BINDIR/checkVars.sh" "$BINDIR/detener.sh" "$BINDIR/fileExists.sh" "$BINDIR/GraLog.sh" "$BINDIR/moverA.sh" "$BINDIR/verifyEnvironment.sh")
 	for item in ${filesToCheck[*]}
 	do
-		$fileExistsFUNC "$item" $CMD
-		local status=$?
-    	if [ $status -ne 0 ]; then
-    	    echo "$MESSAGE_FILE_NOT_FOUND $item"
-    	    $GRALOG "$CMD" "$MESSAGE_FILE_NOT_FOUND $item" "ERR"
-    	    return "1"
-    	fi
+		existeFile=$($fileExistsFUNC "$item" "$CMD")
+		if [ "$existeFile"  != "0" ]; then
+			echo "$MESSAGE_FILE_NOT_FOUND $item"
+			$GRALOG "$CMD" "$MESSAGE_FILE_NOT_FOUND $item" "ERR"
+		    return "1"
+		fi
 	done
 	return "0"
 }
@@ -87,7 +84,7 @@ function examPath
 
 function verificarPermisos
 {
-	filesToCheckPerms=("$GRALOG" "$fileExistsFUNC" "./AFREC.sh" "$BINDIR" "$MAEDIR" "$NOVEDIR" "$ACEPDIR" "$PROCDIR" "$REPODIR" "$LOGDIR" "$RECHDIR")
+	filesToCheckPerms=("$GRALOG" "$fileExistsFUNC" "$BINDIR/AFREC.sh" "$BINDIR" "$MAEDIR" "$NOVEDIR" "$ACEPDIR" "$PROCDIR" "$REPODIR" "$LOGDIR" "$RECHDIR" "$BINDIR/AFREC.sh" "$BINDIR/AFUMB.sh" "$BINDIR/arrancar.sh" "$BINDIR/checkVars.sh" "$BINDIR/detener.sh" "$BINDIR/fileExists.sh" "$BINDIR/GraLog.sh" "$BINDIR/moverA.sh" "$BINDIR/verifyEnvironment.sh")
 	for func in ${filesToCheckPerms[*]}
 	do
 		if ! [ -x "$func" ]; then
@@ -159,6 +156,8 @@ if [ "$AFINI_STATUS" == "INICIALIZADO" ]; then
 else
 		installComplete
 		environmentOk="$?"
+		fileExistsFUNC="$BINDIR/fileExists.sh"
+		export GRALOG="$BINDIR/GraLog.sh"
 		if [ "$environmentOk" != "0" ]; then
 		       echo "FALTA COMPLETAR INSTALACION - Ejecutar: ' AfInstal.sh'"
 		else
@@ -187,16 +186,14 @@ else
 								while [ -z $activarAFREC ]
 								do
 									read -p "¿Desea efectuar la activación de AFREC? (Si – No) " activarAFREC
-									activarAFREC=$(echo $activarAFREC | grep '^[Ss][Ii]$\|^[Nn][Oo]$' | tr '[:upper:]' '[:lower:]')
+									activarAFREC=$(echo "$activarAFREC" | grep '^[Ss][Ii]$\|^[Nn][Oo]$' | tr '[:upper:]' '[:lower:]')
 								done
-								if [ $activarAFREC = "no" ]; then
+								if [ "$activarAFREC" = "no" ]; then
 									echo "No se inicio el comando AFREC"
-									#TODO explciar como arrancar con ARRANCAR
 									echo "Para arrancarlo puede ejecutar './arrancar.sh AFREC.sh' "
 								else
 									afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
 									if [ "$afrecRunning" = "" ]; then
-										#TODO ejecutar el AFREC
 										echo "Se lanza AFREC ..."
 										$BINDIR/AFREC.sh&
 										afrecRunning=$(ps | grep "AFREC" | sed "s/ *\([0-9]*\).*/\1/g")
@@ -206,11 +203,9 @@ else
 									mensajeAfrecCorriendo="AFREC corriendo bajo el no.: $afrecRunning"
 									echo "$mensajeAfrecCorriendo"
 									$GRALOG "$CMD" "$mensajeAfrecCorriendo" "INFO"
-									#TODO actualizar como correr el DETENER
 									echo "Para detener el proceso AFREC ejecute: './detener.sh AFREC.sh"
 								fi
 								export AFINI_STATUS
-								echo "FIN AFINI"
 						fi
 				fi
 		fi
