@@ -71,9 +71,8 @@ esac
 DATENOW=$(date +'%d-%m-%Y %H:%M:%S')
 
 #Tamaño del log
-#LOGSIZE=$(stat -c%s "$LOGFILE")
+LOGSIZE=$(stat -c%s "$LOGFILE")
 
-LOGSIZE=10
 if [ $LOGSIZE -gt $LOGMAX ] 
 then
 	LINESIZE=`wc -l $LOGFILE | cut -d ' ' -f 1`
