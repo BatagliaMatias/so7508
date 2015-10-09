@@ -112,6 +112,7 @@ do
 
 				#Si el archivo sigue vivo aca lo manda a la carpeta aceptado.
 				$MOVER_A "$FILE" "$ACEPDIR"
+				$GRALOG "AFREC" "Archivo Aceptado $FILE" "INFO"
 
 			done
 		fi
