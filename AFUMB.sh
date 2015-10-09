@@ -1,24 +1,18 @@
 #!/bin/bash
 
 #***************************Variables***************************
-#Directorios de prueba INICIO
-ACEPDIR='./ACEPDIR/'
-PROCDIR='./PROCDIR/'
-MAEDIR='./MAEDIR/'
-RECHDIR='./RECHDIR/'
 #Directorios de prueba FIN
 
-GRALOG="./GraLog.sh"
-MOVERA="./MoverA.sh"
+MOVERA="$MOVER_A"
 
 #Directorios de archivos
-dirArchivosProcesados='proc/'
-dirLlamadasRechazados='llamadas/'
+dirArchivosProcesados='/proc/'
+dirLlamadasRechazados='/llamadas/'
 #Archivos
-arcMaestrodeAgentes="agentes.mae"
-arcCodAreaArg="CdA.mae"
-arcCodPais="CdP.mae"
-arcUmbral="umbral.tab"
+arcMaestrodeAgentes="/agentes.mae"
+arcCodAreaArg="/CdA.mae"
+arcCodPais="/CdP.mae"
+arcUmbral="/umbrales.tab"
 #Variables
 listaDeArchivos=""
 IDCentral=""
@@ -37,6 +31,10 @@ IDUmbral=""
 umbrales=""
 
 #***************************Funciones***************************
+
+mkdir -p "$PROCDIR$dirArchivosProcesados"
+mkdir -p "$RECHDIR$dirLlamadasRechazados"
+
 function existeArchivo
 {
 
@@ -87,7 +85,7 @@ function grabar_llamada_sospechosa
 
 	existeDirectorio "$PROCDIR"
 
-	echo "$IDCentral;$IDAgente;$IDUmbral;$tipoDeLlamado;$inicioDeLlamada;$tiempo;$codAreaA;$numeroDeLineaA;$codPaisB;$codAreaB;$numLineaB;${arc:4}" >> "$PROCDIR""$nombreArchivo"
+	echo "$IDCentral;$IDAgente;$IDUmbral;$tipoDeLlamado;$inicioDeLlamada;$tiempo;$codAreaA;$numeroDeLineaA;$codPaisB;$codAreaB;$numLineaB;${arc:4}" >> "$PROCDIR/""$nombreArchivo"
 
 }
 
@@ -399,8 +397,10 @@ function ordenar_archivos
 	declare local archivosValidos=""
 	declare local archivosInvalidos=""
 
-	archivosValidos=`echo $listaDeArchivos | tr " " "\n" | grep '^\([A-Z]\{3\}\)_\([0-9]\{8\}\)$'`
-	archivosInvalidos=`echo $listaDeArchivos | tr " " "\n" | grep -v '^\([A-Z]\{3\}\)_\([0-9]\{8\}\)$' | tr "\n" " "`
+	$GRALOG "AFUMB" "aaa $listaDeArchivos" "INFO"
+	archivosValidos=$listaDeArchivos
+	#archivosValidos=`echo $listaDeArchivos | tr " " "\n" | grep '^\([A-Z]\{3\}\)_\([0-9]\{8\}\)$'`
+	#archivosInvalidos=`echo $listaDeArchivos | tr " " "\n" | grep -v '^\([A-Z]\{3\}\)_\([0-9]\{8\}\)$' | tr "\n" " "`
 
 	obtener_cantidad "$archivosValidos"
 
@@ -412,7 +412,7 @@ function ordenar_archivos
 	fi
 
 	archivosValidos=` echo $archivosValidos | tr " " "\n" | sort -t '_' -k2 | tr "\n" " "`
-
+	$GRALOG "AFUMB" "texto $archivosValidos" "INFO"
 	listaDeArchivos=$archivosValidos
 
 }
@@ -421,12 +421,11 @@ function obtener_archivos
 {
 
 	existeDirectorio "$ACEPDIR"
-
 	declare local archivos=` ls $ACEPDIR`
-
+	$GRALOG "AFUMB" "$archivos" "INFO"
 	for i in $archivos
 	do
-		if [ -f "$ACEPDIR$i" ]
+		if [ -f "$ACEPDIR/$i" ]
 		then
 			listaDeArchivos="$listaDeArchivos $i"
 		fi
@@ -453,29 +452,29 @@ do
 
 	if [ -f "$PROCDIR$dirArchivosProcesados$archivo" ]
 	then
-		diferencia=`diff "$ACEPDIR$archiv" "$PROCDIR$dirArchivosProcesados$archivo"`
+		diferencia=`diff "$ACEPDIR/$archiv" "$PROCDIR$dirArchivosProcesados$archivo"`
 		if [ "$diferencia" = ""  ]
 		then
 			archivosRechazados=`expr $archivosRechazados + 1`
 			$GRALOG "AFUMB" "Se rechaza el archivo: $archivo por estar DUPLICADO" "WAR"
-			$MOVERA "$ACEPDIR$archivo" "$RECHDIR" "AFUMB"
+			$MOVERA "$ACEPDIR/$archivo" "$RECHDIR" "AFUMB"
 			continue
 		fi
 	fi
 	#Primer registro del archivo
-	registro=`head -1 "$ACEPDIR$archivo"`
+	registro=`head -1 "$ACEPDIR/$archivo"`
 	verificar_registro "$registro"
 	if [ "$registroValido" = "" ]
 	then
 		archivosRechazados=`expr $archivosRechazados + 1`
 		$GRALOG "AFUMB" "Se rechaza el archivo: $archivo porque su estructura no se corresponde con el formato esperado." "WAR"
-		$MOVERA "$ACEPDIR$archivo" "$RECHDIR" "AFUMB"
+		$MOVERA "$ACEPDIR/$archivo" "$RECHDIR" "AFUMB"
 		continue
 	fi
 	$GRALOG "AFUMB" "Archivo a procesar: $archivo" "INFO"
 	IFS='
 '
-	for registro in `cat "$ACEPDIR$archivo"`
+	for registro in `cat "$ACEPDIR/$archivo"`
 	do
 		cantidadDeRegistros=`expr $cantidadDeRegistros + 1`
 		validar_campos "$archivo" "$registro"
@@ -501,12 +500,12 @@ do
 	llamadasNoSospechosas=`expr $llamadasConUmbral - $llamadasSospechosas`
 	echo -e "    . Cantidad de llamadas: $cantidadDeRegistros: Rechazadas: $registrosRechazdos, Con umbral = $llamadasConUmbral, Sin umbral $llamadasSinUmbral\n    . Cantidad de llamadas sospechosas: $llamadasSospechosas, no sospechosas: $llamadasNoSospechosas"
 
-	$MOVERA "$ACEPDIR$archivo" "$PROCDIR$dirArchivosProcesados" "AFUMB"
+	$MOVERA "$ACEPDIR/$archivo" "$PROCDIR$dirArchivosProcesados" "AFUMB"
 	IFS=' '
 done
 
 archivosProcesados=`expr $cantidadDeArchivos - $archivosRechazados`
-$GRALOG "AFUMB" ". Cantidad de archivos procesados: $archivosProcesados\n. Cantidad de archivos rechazados: $archivosRechazados\nFin de AFUMB" "INFO"
+$GRALOG "AFUMB" ". Cantidad de archivos procesados: $archivosProcesados. Cantidad de archivos rechazados: $archivosRechazados Fin de AFUMB" "INFO"
 #Hace falta??
 IFS=' '
 LANG='es_AR.UTF-8'

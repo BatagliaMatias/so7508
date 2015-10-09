@@ -330,7 +330,13 @@ function executeInstaler(){
 	 do 
 		cp "$i" "$BASEDIR$BINDIR/$i"
 		chmod u+x "$BASEDIR$BINDIR/$i"
-	done	
+	done
+	for i in $(ls *.pl)
+	 do
+		cp "$i" "$BASEDIR$BINDIR/$i"
+		chmod u+x "$BASEDIR$BINDIR/$i"
+	done
+
 
 	for i in $(ls $CONFDIR)
 	do
@@ -355,8 +361,11 @@ function executeInstaler(){
 
 	cp "$BASEDIR$GRUPO/conf/afinstall.temp" "$BASEDIR$GRUPO/conf/afinstall.conf"
 
+	cp -r "$BASEDIR/Datos/MAE/." "$BASEDIR$MAEDIR/"
+
 	echo "Instalación CONCLUIDA"
 	log "Installer" "Instalación CONCLUIDA" "I"
+
 }
 
 #Otorgo permisos a los comando que voy a utilizar

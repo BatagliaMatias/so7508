@@ -1,10 +1,7 @@
 #!/bin/bash
 
-GRALOG="./GraLog.sh"
-
-
 function verificarInicializacionDeAmbiente() {
-echo "$CONFDIR"
+#echo "$CONFDIR"
 
 	if [[ "$CONFDIR" == "" ]]
 	then
@@ -73,8 +70,8 @@ if [ $# -ne 1 ]
 then
 	echo "Se debe indicar un proceso a arrancar"
 	$GRALOG "Arrancar" "Se debe indicar un proceso a arrancar" "ERR"
-	exit 1
-fi
+
+else
 
 
 
@@ -86,12 +83,11 @@ if [[ $PID != "" ]]
 then
 	echo Ya se esta ejecutando el proceso
 	$GRALOG "Arrancar" "Ya se esta ejecutando el proceso" "ERR"
-	exit 0
-fi
+else
 
 #ejecuto el proceso
 
-nohup $1 > /dev/null 2>&1 &
+nohup "$BINDIR/$1" > /dev/null 2>&1 &
 PID=$!
 
 #Verifico que se haya ejecutado correctamente
@@ -101,4 +97,6 @@ if [ "$PID" != "" ]; then
 else 
 	echo "Ocurrio un error al ejecutar $1"
 	$GRALOG "Arrancar" "Ocurrio un error al ejecutar $1" "ERR"
+fi
+fi
 fi

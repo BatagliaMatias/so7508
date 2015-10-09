@@ -11,8 +11,7 @@ SEPARATOR_MAEDIR=";"
 TODAY=date +%Y%m%d >> /dev/null 2>&1
 DIAS_LIMITE=365
 #RUN_AFUMB=1
-#AFUMB="./AFUMB.sh"
-MOVER_A="./moverA.sh" 
+AFUMB="AFUMB.sh"
 
 while [ true ]
 do
@@ -130,7 +129,7 @@ do
 		PID=$(pgrep "^AFUMB.sh$")
 		if [ -z "$PID" ];
 		then
-		    $AFUMB & #loguear que ejecuto AFUMB
+		    $BINDIR/$AFUMB& #loguear que ejecuto AFUMB
 		    PID=$!
 		    #PID=$(pgrep "^AFUMB.sh$")
 		    $GRALOG "AFREC" "Se ejecuto AFUMB con PID $PID" "INFO"

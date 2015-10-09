@@ -50,7 +50,7 @@ function installComplete
 
 function existsAllFiles
 {
-	filesToCheck=("$CONFIGFILE" "$MAEDIR/CdP.mae" "$MAEDIR/CdA.mae" "$MAEDIR/agentes.mae" "$MAEDIR/umbrales.tab" "$BINDIR/AFREC.sh" "$BINDIR/AFUMB.sh" "$BINDIR/arrancar.sh" "$BINDIR/checkVars.sh" "$BINDIR/detener.sh" "$BINDIR/fileExists.sh" "$BINDIR/GraLog.sh" "$BINDIR/moverA.sh" "$BINDIR/verifyEnvironment.sh")
+	filesToCheck=("$CONFIGFILE" "$MAEDIR/CdP.mae" "$MAEDIR/CdA.mae" "$MAEDIR/agentes.mae" "$MAEDIR/centrales.csv" "$MAEDIR/umbrales.tab" "$BINDIR/AFREC.sh" "$BINDIR/AFUMB.sh" "$BINDIR/arrancar.sh" "$BINDIR/checkVars.sh" "$BINDIR/detener.sh" "$BINDIR/fileExists.sh" "$BINDIR/GraLog.sh" "$BINDIR/moverA.sh" "$BINDIR/verifyEnvironment.sh" "$BINDIR/AFLIST.pl")
 	for item in ${filesToCheck[*]}
 	do
 		existeFile=$($fileExistsFUNC "$item" "$CMD")
@@ -158,6 +158,7 @@ else
 		environmentOk="$?"
 		fileExistsFUNC="$BINDIR/fileExists.sh"
 		export GRALOG="$BINDIR/GraLog.sh"
+		export MOVER_A="$BINDIR/moverA.sh"
 		if [ "$environmentOk" != "0" ]; then
 		       echo "FALTA COMPLETAR INSTALACION - Ejecutar: ' AfInstal.sh'"
 		else

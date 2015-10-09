@@ -10,7 +10,6 @@ ERR_ARCH_NO_EXISTE=4
 ERR_DIR_NO_EXISTE=5
 ERR_CANT_PARAM=2
 ERR_ORIGEN_IGUAL_DESTINO=6
-GRALOG="./GraLog.sh"
 
 #LOGEXT="log" #VIENE DE AFUERA
 PATH=${PATH}:$PWD #VIENE DE AFUERA
@@ -27,25 +26,26 @@ if [ $# -ne 3 -a $# -ne 2 ]
 then
 	echo "Cantidad erronea de parametros"
 	#GraLog "MoverA" $ERR_CANT_PARAM "2 o 3"
-        $GRALOG "MoverA" "$ERR_CANT_PARM""INFO"
+        $GRALOG "MoverA" "$ERR_CANT_PARM" "INFO"
 	exit $ERR_CANT_PARAM
 fi
 if [ ! -f "$ORIGEN" ];then
 	echo "Archivo origen inexistente"
 	#GraLog "MoverA" $ERR_ARCH_NO_EXISTE $ORIGEN
-        $GRALOG "MoverA" "$ERR_ARCH_NO_EXISTE $ORIGEN""INFO"
+        $GRALOG "MoverA" "$ERR_ARCH_NO_EXISTE $ORIGEN" "INFO"
 	exit $ERR_ARCH_NO_EXISTE
 fi
 if [ ! -d "$DESTINO" ];then
 	echo "Directorio destino inexistente"
 	#GraLog "MoverA" $ERR_DIR_NO_EXISTE $DESTINO
-        $GRALOG "MoverA" "$ERR_DIR_NO_EXISTE $DESTINO""INFO"
+        $GRALOG "MoverA" "$ERR_DIR_NO_EXISTE $DESTINO" "INFO"
 	exit $ERR_DIR_NO_EXISTE
 fi
-if [  -f "$ORIGEN" ==-d "$DESTINO"];then
+if [ "$ORIGEN" -eq "$DESTINO" ];then
+
 	echo "Archivo origen igual al directorio destino "
-	#GraLog "MoverA" $ERR_ORIGEN_IGUAL_DESTINO $ORIGEN
-        $GRALOG "MoverA" "$ERR_ORIGEN_IGUAL_DESTINO $ORIGEN""INFO"
+	#GraLog "MoverA" "$ERR_ORIGEN_IGUAL_DESTINO $ORIGEN"
+    $GRALOG "MoverA" "$ERR_ORIGEN_IGUAL_DESTINO $ORIGEN $DESTINO" "INFO"
 	exit $ERR_ORIGEN_IGUAL_DESTINO
 fi
 
@@ -92,10 +92,10 @@ fi
 if [ $# -eq 3 ]
 then
 	#GraLog "MoverA" I "Se movio el archivo exitosamente mediante el comando $3"
-         $GRALOG "MoverA" "Se movio el archivo exitosamente mendiante el comando $3""INFO"
+         $GRALOG "MoverA" "Se movio el archivo exitosamente mendiante el comando $3" "INFO"
 else
 	#GraLog "MoverA" I "Se movio el archivo exitosamente desde la consola"
-        $GRALOG "MoverA" "Se movio el archivo exitosamente desde la consola""INFO"
+        $GRALOG "MoverA" "Se movio el archivo exitosamente desde la consola" "INFO"
 fi
 
 exit 0
