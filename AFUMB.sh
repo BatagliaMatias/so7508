@@ -125,7 +125,7 @@ function obtener_umbrales
 	existeArchivo "$MAEDIR/$arcUmbral"
 
 	umbrales=""
-	umbrales=`grep "^[^;]*;$codAreaA;$numeroDeLineaA;$tipoDeLlamado;[^;]*;[^;]*;[^;]*$" "$MAEDIR/$arcUmbral"`
+	umbrales=`grep "^[^;]*;$codAreaA;$numeroDeLineaA;$tipoDeLlamado;[^;]*;[^;]*;Activo$" "$MAEDIR/$arcUmbral"`
 
 }
 
