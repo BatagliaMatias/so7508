@@ -524,7 +524,7 @@ do
 		fi
 	done
 	llamadasNoSospechosas=`expr $llamadasConUmbral - $llamadasSospechosas`
-	echo -e "    . Cantidad de llamadas: $cantidadDeRegistros: Rechazadas: $registrosRechazdos, Con umbral = $llamadasConUmbral, Sin umbral $llamadasSinUmbral\n    . Cantidad de llamadas sospechosas: $llamadasSospechosas, no sospechosas: $llamadasNoSospechosas"
+	$GRALOG "AFUMB"	". Cantidad de llamadas: $cantidadDeRegistros: Rechazadas: $registrosRechazdos, Con umbral = $llamadasConUmbral, Sin umbral $llamadasSinUmbral . Cantidad de llamadas sospechosas: $llamadasSospechosas, no sospechosas: $llamadasNoSospechosas" "INFO"
 
 	$MOVER_A "$ACEPDIR/$archivo" "$PROCDIR/$dirArchivosProcesados" "AFUMB"
 	IFS=' '
