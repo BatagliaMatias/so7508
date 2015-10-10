@@ -2,8 +2,6 @@
 
 GRALOG="./GraLog.sh"
 
-#Obtengo el pid
-#PID=`ps | grep "$1" | head -1 | awk '{print $1 }'`
 PID=$(pgrep "$1")
 
 if [[ "$PID" != "" ]]
