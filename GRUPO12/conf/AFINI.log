@@ -1,0 +1,146 @@
+08-10-2015 20:15:34-maxi-AFINI-INFORMACION-No existe: /home/maxi/IdeaProjects/so7508/GRUPO12/bin/AFLIST.pl\nFin de AFINI 
+08-10-2015 20:15:34-maxi-AFINI-INFORMACION-Archivo no encontrado:  /home/maxi/IdeaProjects/so7508/GRUPO12/bin/AFLIST.pl
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Configuración: ./GRUPO12/conf
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> AFINI.log
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> afinstall.conf
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> afinstall.temp
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> GraLog.log
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Ejecutables: /home/maxi/IdeaProjects/so7508/GRUPO12/bin
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> AFINI.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> AfInstal.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> AFLIST.pl
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> AFREC.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> AFUMB.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> arrancar.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> checkVars.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> detener.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> fileExists.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> GraLog.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> moverA.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> MoverA.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> verifyEnvironment.sh
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Maestros y Tablas: /home/maxi/IdeaProjects/so7508/GRUPO12/mae
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> agentes.mae
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> CdA.mae
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> CdP.mae
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> centrales.csv
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-		|------> umbrales.tab
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de recepción de archivos de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/novedades
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Aceptados: /home/maxi/IdeaProjects/so7508/GRUPO12/aceptadas
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Sospechosas: /home/maxi/IdeaProjects/so7508/GRUPO12/sospechosas
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Archivos de Reportes de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/reportes
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Archivos de Log: /home/maxi/IdeaProjects/so7508/GRUPO12/log
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Directorio de Archivos Rechazados: /home/maxi/IdeaProjects/so7508/GRUPO12/rechazadas
+08-10-2015 20:17:22-maxi-AFINI-INFORMACION-Estado del Sistema: INICIALIZADO
+08-10-2015 20:17:36-maxi-AFINI-INFORMACION-AFREC corriendo bajo el no.: 5474
+08-10-2015 20:23:35-maxi-AFINI-INFORMACION-El ambiente ya fue inicializado, para reiniciar termine la sesión e ingrese nuevamente
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Configuración: ./GRUPO12/conf
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AFINI.log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> afinstall.conf
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> afinstall.temp
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AFREC.log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> Arrancar.log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> detener.log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> GraLog.log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> MoverA.log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Ejecutables: /home/maxi/IdeaProjects/so7508/GRUPO12/bin
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AFINI.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AfInstal.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AFLIST.pl
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AFREC.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> AFUMB.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> arrancar.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> checkVars.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> detener.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> fileExists.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> GraLog.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> moverA.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> verifyEnvironment.sh
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Maestros y Tablas: /home/maxi/IdeaProjects/so7508/GRUPO12/mae
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> agentes.mae
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> CdA.mae
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> CdP.mae
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> centrales.csv
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-		|------> umbrales.tab
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de recepción de archivos de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/novedades
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Aceptados: /home/maxi/IdeaProjects/so7508/GRUPO12/aceptadas
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Sospechosas: /home/maxi/IdeaProjects/so7508/GRUPO12/sospechosas
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Archivos de Reportes de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/reportes
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Archivos de Log: /home/maxi/IdeaProjects/so7508/GRUPO12/log
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Directorio de Archivos Rechazados: /home/maxi/IdeaProjects/so7508/GRUPO12/rechazadas
+08-10-2015 20:31:07-maxi-AFINI-INFORMACION-Estado del Sistema: INICIALIZADO
+08-10-2015 20:39:36-maxi-AFINI-INFORMACION-El ambiente ya fue inicializado, para reiniciar termine la sesión e ingrese nuevamente
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Configuración: ./GRUPO12/conf
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AFINI.log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> afinstall.conf
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> afinstall.temp
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AFREC.log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> Arrancar.log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> detener.log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> GraLog.log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> MoverA.log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Ejecutables: /home/maxi/IdeaProjects/so7508/GRUPO12/bin
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AFINI.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AfInstal.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AFLIST.pl
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AFREC.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> AFUMB.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> arrancar.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> checkVars.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> detener.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> fileExists.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> GraLog.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> moverA.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> verifyEnvironment.sh
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Maestros y Tablas: /home/maxi/IdeaProjects/so7508/GRUPO12/mae
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> agentes.mae
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> CdA.mae
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> CdP.mae
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> centrales.csv
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-		|------> umbrales.tab
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de recepción de archivos de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/novedades
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Aceptados: /home/maxi/IdeaProjects/so7508/GRUPO12/aceptadas
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Sospechosas: /home/maxi/IdeaProjects/so7508/GRUPO12/sospechosas
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Archivos de Reportes de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/reportes
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Archivos de Log: /home/maxi/IdeaProjects/so7508/GRUPO12/log
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Directorio de Archivos Rechazados: /home/maxi/IdeaProjects/so7508/GRUPO12/rechazadas
+08-10-2015 20:40:02-maxi-AFINI-INFORMACION-Estado del Sistema: INICIALIZADO
+08-10-2015 20:40:06-maxi-AFINI-INFORMACION-AFREC corriendo bajo el no.: 12472
+08-10-2015 20:44:58-maxi-AFINI-INFORMACION-El ambiente ya fue inicializado, para reiniciar termine la sesión e ingrese nuevamente
+08-10-2015 20:59:15-maxi-AFINI-INFORMACION-El ambiente ya fue inicializado, para reiniciar termine la sesión e ingrese nuevamente
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Configuración: ./GRUPO12/conf
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFINI.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> afinstall.conf
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> afinstall.temp
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFREC.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFUMB.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> Arrancar.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> detener.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> GraLog.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> MoverA.log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Ejecutables: /home/maxi/IdeaProjects/so7508/GRUPO12/bin
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFINI.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AfInstal.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFLIST.pl
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFREC.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> AFUMB.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> arrancar.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> checkVars.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> detener.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> fileExists.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> GraLog.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> moverA.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> verifyEnvironment.sh
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Maestros y Tablas: /home/maxi/IdeaProjects/so7508/GRUPO12/mae
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> agentes.mae
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> CdA.mae
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> CdP.mae
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> centrales.csv
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-		|------> umbrales.tab
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de recepción de archivos de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/novedades
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Aceptados: /home/maxi/IdeaProjects/so7508/GRUPO12/aceptadas
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Archivos de llamadas Sospechosas: /home/maxi/IdeaProjects/so7508/GRUPO12/sospechosas
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Archivos de Reportes de llamadas: /home/maxi/IdeaProjects/so7508/GRUPO12/reportes
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Archivos de Log: /home/maxi/IdeaProjects/so7508/GRUPO12/log
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Directorio de Archivos Rechazados: /home/maxi/IdeaProjects/so7508/GRUPO12/rechazadas
+08-10-2015 21:02:38-maxi-AFINI-INFORMACION-Estado del Sistema: INICIALIZADO
