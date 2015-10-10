@@ -1,14 +1,29 @@
-./Afinstal.sh ---> QUE SEA EN MAYUSCULA
-. AFINI.sh
+Sistema AFRA-J
+
+Para instalar el sistema:
+
+. arrancar Afinstal.sh 
+
+Para inicializar las variables:
+
+. arrancar AFINI.sh
+
+Para ejecutar el comando AFREC:
+
 . arrancar.sh AFREC.sh
 
+Para ejercutar el comando AFLIST:
 
-en el AFREC levantar todos los archivos que no tengan cvs
+. arrancar.sh AFLIS.pl
 
 
-PARA DETENER:
+PARA detener algun comando:
+
 ./detener.sh comando.sh
 
-Al loguear guarda los logs en el /conf y no en /log
-y cuando le pedis que lo haga como err o warning lo hace como info
 
+A REALIZAR:
+
+-Al loguear guarda los logs en el /conf y no en /log
+-y cuando le pedis que lo haga como err o warning lo hace como info
+-Que el primer comando sea en mayuscula
