@@ -60,7 +60,7 @@ do
 		#4 Chequeo formato de los archivos 
 		for FILE in $NOVEDIR/*
 		do
-			if ! [[ $FILE =~ ^$NOVEDIR/..._........ ]];
+			if ! [[ $FILE =~ ^$NOVEDIR/[a-zA-Z]{3}_[0-9]{8}$ ]]; #sin .csv ahora
 				then #echo $FILE NO FORMATO #Mover Archivo que no es formato
 				$GRALOG "AFREC" "Archivo Rechazado, $FILE tiene formato incorrecto" "WAR"
 				$MOVER_A "$FILE" "$RECHDIR"
@@ -111,7 +111,11 @@ do
 				fi
 
 				#Si el archivo sigue vivo aca lo manda a la carpeta aceptado.
-				$MOVER_A "$FILE" "$ACEPDIR"
+				if  [[ $FILE =~ ^$NOVEDIR/[a-zA-Z]{3}_[0-9]{8}$ ]];
+					then
+					$MOVER_A "$FILE" "$ACEPDIR"
+					$GRALOG "AFREC" "Archivo Aceptado $FILE" "INFO"
+				fi
 
 			done
 		fi
