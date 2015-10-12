@@ -1,6 +1,7 @@
 Sistema AFRA-J
 
 Para instalar el sistema:
+	
 	1. Iniciar terminal.
 	
 	2. Copiar el archivo GRUPO12.tgz a la carpeta en la que quiere realizar la instalación:
