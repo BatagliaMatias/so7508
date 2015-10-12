@@ -42,7 +42,7 @@ Para instalar el sistema:
 
 Para inicializar las variables:
 
-. arrancar AFINI.sh
+. AFINI.sh
 
 Para ejecutar el comando AFREC:
 
