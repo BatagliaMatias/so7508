@@ -181,7 +181,11 @@ function getDirectoryPath(){
 		then
 			pathTemp=$pathDefault
 		else
-			pathTemp=$(echo $pathTemp | grep '^/.*$' )
+			#pathTemp=$(echo $pathTemp | grep '^/.*$' )
+			#Valido caracteres alfanumericos en path
+			pathTemp=$(echo $pathTemp | grep '^/[a-zA-Z0-9]*$' )
+			#valido que no se pueda seleccionar el directorio conf
+			pathTemp=$(echo $pathTemp | grep -v '^/conf$' )
 			if [ ! -z "$pathTemp" -a "$pathTemp" != " " ]
 			then	
 				pathTemp=$GRUPO$pathTemp	
