@@ -33,6 +33,12 @@ Para instalar el sistema:
 		$ ./AFINSTAL.sh
 
 	6. Continuar con las indicaciones del instalador
+	
+	7. Instalacion exitosa, se crean los directorios configurados dentro de la carpeta GRUPO12/
+	
+	8. Para obtener mas información acerca de los pasos realizados durante la instalacion revisar archivo log que se encuentra en /conf/GraLog.log
+	
+ 
 
 Para inicializar las variables:
 
