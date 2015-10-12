@@ -11,7 +11,7 @@ fi
 #El directorio de log para el resto de los comandos es $LOGDIR
 
 #Variable temporal, comentar en la integracion de los comandos.
-LOGDIR="./conf/"
+#LOGDIR="./conf/"
 
 #Archivo temporal
 LOGFILETEMP="$LOGDIR/temp$LOGEXT"
