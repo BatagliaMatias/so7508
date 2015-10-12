@@ -7,7 +7,7 @@ Para instalar el sistema:
 	2. Copiar el archivo GRUPO12.tgz a la carpeta en la que quiere realizar la instalación:
 		$ cp [ruta_paquete]/GRUPO12.tgz [ruta_instalacion]
 
-	3. Vaya a la carpeta de instalación y extraiga el contenido del paquete de instalación:
+	3. ir a la carpeta de instalación y extraer el contenido del paquete de instalación:
 		$ cd [ruta_instalacion]
 		$ tar -xvf GRUPO12.tgz
 
@@ -15,7 +15,7 @@ Para instalar el sistema:
 		$ cd GRUPO12
 		$ chmod u+rx AFINSTAL.sh
 
-	5. Ejecute el instalador:
+	5. Ejecutar el instalador:
 		$ ./AFINSTAL.sh
 
 	6. Continuar con las indicaciones del instalador
