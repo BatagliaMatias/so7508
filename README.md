@@ -41,8 +41,10 @@ Para instalar el sistema:
  
 
 Para inicializar las variables:
-Ingresar al directorio BIN definido en la instalacion y ejecutar:
-. AFINI.sh
+
+	Ingresar al directorio BIN definido en la instalacion y ejecutar:
+
+	. AFINI.sh
 
 Para ejecutar el comando AFREC:
 
