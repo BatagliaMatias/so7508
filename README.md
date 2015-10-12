@@ -1,9 +1,10 @@
-Instrucciones para arrancar el SO desde puerto USB
+Instrucciones para arrancar el SO desde puerto USB y loguearse con usuario de ubuntu por defecto.
 
 1) Conectar el pendrive a un puerto trasero de la máquina.
 2) Encender la máquina abriendo las opciones de booteo en caso de que automaticamente no bootee desde el USB (F1 / F2 / F8)
 3) Esperar que inicie la instalacion de Ubuntu y seleccionar idioma español
 4) Hacer click en la opcion de Probar Sistema Operativo
+5) Ahora se encuentra el sistema iniciado y logueado con el usuario de ubuntu por defecto.
 
 ------------------------------------------------------------------------
 
