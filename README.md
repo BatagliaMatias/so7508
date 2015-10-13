@@ -59,6 +59,11 @@ PARA detener algun comando:
 
 ./detener.sh comando.sh
 
+Para empaquetar
+
+tar -cvzf tarballname.tar.gz itemtocompress
+
+
 
 A REALIZAR:
 
