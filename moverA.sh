@@ -41,7 +41,7 @@ if [ ! -d "$DESTINO" ];then
         $GRALOG "MoverA" "$ERR_DIR_NO_EXISTE $DESTINO" "INFO"
 	exit $ERR_DIR_NO_EXISTE
 fi
-if [ "$ORIGEN" -eq "$DESTINO" ];then
+if [ "$ORIGEN" == "$DESTINO" ];then
 
 	echo "Archivo origen igual al directorio destino "
 	#GraLog "MoverA" "$ERR_ORIGEN_IGUAL_DESTINO $ORIGEN"
