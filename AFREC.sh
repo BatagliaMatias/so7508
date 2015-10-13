@@ -83,6 +83,7 @@ do
 				   then #echo "$NOMBRE codigo malo" 
 				   		$GRALOG "AFREC" "Archivo Rechazado, $FILE codigo incorrecto" "WAR"
 				   		$MOVER_A "$FILE" "$RECHDIR"
+				   		continue
 				   #mover Archivo que no tiene su codigo en el maestro.
 				fi
 
@@ -90,6 +91,7 @@ do
 				 	then 
 				 		$GRALOG "AFREC" "Archivo Rechazado, $FILE fecha incorrecta" "WAR"
 				 		$MOVER_A "$FILE" "$RECHDIR"
+				 		continue
 				 	#echo "$NOMBRE fecha mala"; #mover archivo por no tener fecha valida
 				 	DIFERENCIA_DIAS="-10"
 				else
@@ -98,8 +100,9 @@ do
 
 				if [ "$DIFERENCIA_DIAS" -gt "$DIAS_LIMITE" ];
 					then
-						$GRALOG "AFREC" "Archivo Rechazado, $FILE fecha superior a un anio" "WAR"
+						$GRALOG "AFREC" "Archivo Rechazado, $FILE fecha demasiado vieja" "WAR"
 						$MOVER_A "$FILE" "$RECHDIR" 
+						continue
 					#echo "$FILE SUPERA EL AÑO" #Mover archivo por superar un año
 				fi
 
@@ -107,6 +110,7 @@ do
 					then 
 						$GRALOG "AFREC" "Archivo Rechazado, $FILE fecha del futuro" "WAR"
 						$MOVER_A "$FILE" "$RECHDIR"
+						continue
 					#echo "$FILE ARCHIVO DEL FUTURO" #Mover archivo por ser del futuro.
 				fi
 
