@@ -48,6 +48,11 @@ do
 		#3 Chequeo que solo sean archivos de texto (elimina vacios)  
 		for FILE in $NOVEDIR/*
 		do
+			if [ -d $FILE ]; then #evita que se procecen directorios
+				$GRALOG "AFREC" "$FILE es un directorio en $NOVEDIR" "WAR"
+				continue
+			fi
+
 			TYPE=$(file "$FILE" | cut -d' ' -f2)
 			if [ "$TYPE" != "ASCII" ]
 				then #echo "$FILE no es texto"
@@ -63,6 +68,10 @@ do
 			#4 Chequeo formato de los archivos 
 			for FILE in $NOVEDIR/*
 			do
+				if [ -d $FILE ]; then
+					continue
+				fi
+
 				if ! [[ $FILE =~ ^$NOVEDIR/[a-zA-Z]{3}_[0-9]{8}$ ]]; #sin .csv ahora
 					then #echo $FILE NO FORMATO #Mover Archivo que no es formato
 					$GRALOG "AFREC" "Archivo Rechazado, $FILE tiene formato incorrecto" "WAR"
@@ -82,6 +91,10 @@ do
 			else
 				for FILE in $NOVEDIR/*
 				do
+					if [ -d $FILE ]; then
+						continue
+					fi
+
 					NOMBRE=${FILE##*/} #me quita la ruta del archivo, queda solo el nombre
 					COD_CENTRAL=$(echo $NOMBRE|cut -d'_' -f1) #Parseo codigo de central y fecha
 					DATE=$(echo $NOMBRE|cut -d'_' -f2 |cut -d'.' -f1)
