@@ -56,7 +56,12 @@ do
 			TYPE=$(file "$FILE" | cut -d' ' -f2)
 			if [ "$TYPE" != "ASCII" ]
 				then #echo "$FILE no es texto"
-				$GRALOG "AFREC" "Archivo Rechazado, $FILE no contiene texto" "WAR"
+					if [[ ! -s $FILE ]]; then
+						$GRALOG "AFREC" "Archivo Rechazado, $FILE esta vacio" "WAR"
+					else
+						$GRALOG "AFREC" "Archivo Rechazado, $FILE no es tipo texto" "WAR"
+					fi
+			
 				$MOVER_A "$FILE" "$RECHDIR"
 				 #Mover Archivo que no es texto
 			fi
