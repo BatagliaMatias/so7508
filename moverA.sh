@@ -2,13 +2,13 @@
 
 # You need to add this line below.
 IFS=$'\n' 
-#Varianles
 
+#Variables
 ORIGEN=$1
 DESTINO=$2
 PROCESO=$3
-#Variables de error
 
+#Variables de error
 ERR_ARCH_NO_EXISTE=4
 ERR_DIR_NO_EXISTE=5
 ERR_CANT_PARAM=2
