@@ -27,6 +27,7 @@ tipoDeLlamado=""
 IDUmbral=""
 umbrales=""
 DIAS_LIMITE=365
+fechasArchivo=""
 
 #***************************Funciones***************************
 
@@ -40,10 +41,14 @@ function existeArchivo
 
 	if [ -f "$existeArchivo" ]
 	then
+
 		return
+
 	else
+
 		$GRALOG "AFUMB" "No existe: $existeArchivo Fin de AFUMB " "ERR"
 		exit 1
+
 	fi
 
 }
@@ -54,10 +59,14 @@ function existeDirectorio
 
 	if [ -d "$existeDirectorio" ]
 	then
+
 		return
+
 	else
+
 		$GRALOG "AFUMB" "No existe: $existeDirectorio Fin de AFUMB " "ERR"
 		exit 1
+
 	fi
 
 }
@@ -91,13 +100,17 @@ function buscar_umbral
 {
 
 	declare local codigoDestino
-	if [ "$tipoDeLlamado" = "DDI" ]
+	if [ "$tipoDeLlamado" == "DDI" ]
 	then
+
 		codigoDestino=$codPaisB
+
 	else
+
 		codigoDestino=$codAreaB
+
 	fi
-	#declare local umbrales
+
 	declare local tiempoTope
 
 	
@@ -109,12 +122,16 @@ function buscar_umbral
 
 	for umbral in $umbrales
 	do
+
 		tiempoTope=`echo $umbral | sed 's/^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;\([0-9^;]*\);[^;]*$/\1/'`
 		if [ $tiempoTope -lt $tiempo ]
 		then
+
 			IDUmbral=`echo $umbral | sed 's/^\([0-9^;]*\);[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*$/\1/'`
 			return
+
 		fi
+
 	done
 
 }
@@ -148,7 +165,6 @@ function validar_numero_B
 	declare local arc="$1"
 	declare local reg="$2"
 	declare local existeCodPaisB
-	#declare local CodPaisBValido
 	declare local existeCodAreaB
 	tipoDeLlamado=""
 
@@ -160,49 +176,61 @@ function validar_numero_B
 
 	existeCodAreaB=` grep "^[^;]*;$codAreaB$" $MAEDIR/$arcCodAreaArg`
 
-	if [ "$existeCodPaisB" = "" -a "$codPaisB" != "" ]
+	if [ "$existeCodPaisB" == "" -a "$codPaisB" != "" ]
 	then
+
 		rechazar_archivo "$arc" "$reg" "El codigo de pais no existe"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El codigo de pais no existe" "WAR"
 		camposValidos="NO"
 		return
+
 	fi	
 
-	if [ "$existeCodAreaB" = "" -a "$codAreaB" != "" ]
+	if [ "$existeCodAreaB" == "" -a "$codAreaB" != "" ]
 	then
+
 		rechazar_archivo "$arc" "$reg" "El codigo de area B no existe"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El codigo de area B no existe" "WAR"
 		camposValidos="NO"
 		return
+
 	fi
 
-	if [ "$codAreaB" = "" -a "$codPaisB" = "" ]
+	if [ "$codAreaB" == "" -a "$codPaisB" = "" ]
 	then
+
 		rechazar_archivo "$arc" "$reg" "El codigo de area B es invalido"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El codigo de area B es invalido" "WAR"
 		camposValidos="NO"
 		return
+
 	fi
 
 	if [ "$codPaisB" != "" -a "$numLineaB" != "" -a "$codAreaB" = "" ]
 	then
+
 		tipoDeLlamado="DDI"
 		return
+
 	fi
 	
 	declare local longitud
 	longitud=`expr ${#codAreaB} + ${#numLineaB}`
 
-	if [ "$codPaisB" = "" -a "$codAreaB" = "$codAreaA" -a "$longitud" -eq 10 ]
+	if [ "$codPaisB" == "" -a "$codAreaB" = "$codAreaA" -a "$longitud" -eq 10 ]
 	then
+
 		tipoDeLlamado="LOC"
 		return
+
 	fi
 
-	if [ "$codPaisB" = "" -a "$codAreaB" != "$codAreaA" -a "$longitud" -eq 10 ]
+	if [ "$codPaisB" == "" -a "$codAreaB" != "$codAreaA" -a "$longitud" -eq 10 ]
 	then
+
 		tipoDeLlamado="DDN"
 		return
+
 	fi
 
 	rechazar_archivo "$arc" "$reg" "La llamada no es ni DDI, ni DDN, ni LOC"
@@ -219,7 +247,9 @@ function verificar_numero_linea_A
 
 	if [ $cantidadDeDigitos -ne 10 ]
 	then
+
 		camposValidos="NO"
+
 	fi
 
 }
@@ -232,9 +262,11 @@ function verificar_codigo_area_A
 	existeArchivo "$MAEDIR/$arcCodAreaArg"
 
 	existeCodigoAreaA=` grep "^[^;]*;$codAreaA$" $MAEDIR/$arcCodAreaArg`
-	if [ "$existeCodigoAreaA" = "" ]
+	if [ "$existeCodigoAreaA" == "" ]
 	then
+
 		camposValidos="NO"
+
 	fi
 
 }
@@ -248,9 +280,11 @@ function verificar_ID
 
 	existeIDAgente=`grep "^[^;]*;[^;]*;$IDAgente;[^;]*;[^;]*$" $MAEDIR/$arcMaestrodeAgentes`
 	
-	if [ "$existeIDAgente" = "" ]
+	if [ "$existeIDAgente" == "" ]
 	then
+
 		camposValidos="NO"
+
 	fi
 
 }
@@ -267,23 +301,27 @@ function cargar_campos
 	#Cargo codigo de area A
 	codAreaA=`echo $reg | grep $'^[^;]*;[^;]*;[^;]*;[0-9^;]*;[^;]*;[^;]*;[^;]*;[^;]*$' | sed 's/^[^;]*;[^;]*;[^;]*;\([0-9^;]*\);[^;]*;[^;]*;[^;]*;[^;]*$/\1/'`
 
-	if [ "$codAreaA" = "" ]
+	if [ "$codAreaA" == "" ]
 	then
+
 		rechazar_archivo "$arc" "$reg" "El codigo de area A tiene caracteres invalidos"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El codigo de area A tiene caracteres invalidos" "WAR"
 		camposValidos="NO"
 		return
+
 	fi
 
 	#Cargo numero de linea A
 	numeroDeLineaA=`echo $reg | grep '^[^;]*;[^;]*;[^;]*;[^;]*;[0-9^;]*;[^;]*;[^;]*;[^;]*$' | sed 's/^[^;]*;[^;]*;[^;]*;[^;]*;\([0-9^;]*\);[^;]*;[^;]*;[^;]*$/\1/'`
 
-	if [ "$numeroDeLineaA" = "" ]
+	if [ "$numeroDeLineaA" == "" ]
 	then
+
 		rechazar_archivo "$arc" "$reg" "El numero de linea A tiene caracteres invalidos"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El numero de linea A tiene caracteres invalidos" "WAR"
 		camposValidos="NO"
 		return
+
 	fi
 
 	#Cargo tiempo de llamada
@@ -296,13 +334,18 @@ function cargar_campos
 
 	numLineaB=`echo $reg | grep '^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;\([0-9^;]*\)$' | sed 's/^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;\([0-9^;]*\)$/\1/'`
 
-	if [ "$numLineaB" = "" ]
+	if [ "$numLineaB" == "" ]
 	then
+
 		rechazar_archivo "$arc" "$reg" "El numero de linea B tiene caracteres invalidos"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El numero de linea B tiene caracteres invalidos" "WAR"
 		camposValidos="NO"
 		return
+
 	fi
+
+	fechasArchivo=`echo $reg | sed  's-^[^;]*;\([0-3][0-9]\)/\([0-1][0-9]\)/\([0-9]\{4\}\)\( [^;]*\);.*$-\3/\2/\1\4-'`
+
 
 }
 
@@ -311,7 +354,8 @@ function verificar_registro
 {
 
 	declare local reg="$1"
-	registroValido=` echo $reg | grep '^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*$'`
+
+	registroValido=` echo "$reg" | grep '^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*$'`
 
 }
 
@@ -320,57 +364,81 @@ function validar_campos
 
 	declare local arch="$1"
 	declare local reg="$2"
+
 	camposValidos="SI"
 	#Verifica la cantidad de campos del registro
 	verificar_registro "$reg"
-	if [ "$registroValido" = "" ]
+
+	if [ "$registroValido" == "" ]
 	then
+
 		rechazar_archivo "$arch" "$reg" "La cantidad de campos no es correcta"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg la cantidad de campos no es correcta" "WAR"
 		camposValidos="NO"
 		return
+
 	fi
 
 	cargar_campos "$arch" "$reg"
 
-	if [ "$camposValidos" = "NO" ]
+	if ! (date -d "$fechasArchivo" >> /dev/null 2>&1)
 	then
+
+		rechazar_archivo "$arch" "$reg" "La Fecha es incorrecta"
+		$GRALOG "AFUMB" "Llamada rechazada: $reg la fecha es incorrecta" "WAR"
+		camposValidos="NO"
 		return
+
+	fi
+
+	if [ "$camposValidos" == "NO" ]
+	then
+
+		return
+
 	fi
 	
 	verificar_ID
 
-	if [ "$camposValidos" = "NO" ]
+	if [ "$camposValidos" == "NO" ]
 	then
+
 		rechazar_archivo "$arch" "$reg" "La ID no existe"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg la La ID no existe" "WAR"
 		return
+
 	fi
 
 	verificar_codigo_area_A
 
-	if [ "$camposValidos" = "NO" ]
+	if [ "$camposValidos" == "NO" ]
 	then
+
 		rechazar_archivo "$arch" "$reg" "El codigo de area A no existe"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El codigo de area A no existe" "WAR"
 		return
+
 	fi
 
 	verificar_numero_linea_A
 
-	if [ "$camposValidos" = "NO" ]
+	if [ "$camposValidos" == "NO" ]
 	then
+
 		rechazar_archivo "$arch" "$reg" "El codigo de area mas el numero de linea es distinto a 10 digitos"
 		$GRALOG "AFUMB" "Llamada rechazada: $reg El codigo de area mas el numero de linea es distinto a 10 digitos" "WAR"
 		return
+
 	fi
 
-	if [ "$tiempo" = "" ]
+	if [ "$tiempo" == "" ]
 	then
+
 		camposValidos="NO"
 		rechazar_archivo "$arch" "$reg" "El tiempo de comunicacion posee un valor invalido"
 		$GRALOG "AFUMB" "Llamada rechazada: $registro El tiempo de comunicacion posee un valor invalido" "WAR"
 		return
+
 	fi
 
 	validar_numero_B "$arch" "$reg"
@@ -381,10 +449,14 @@ function obtener_cantidad
 {
 
 	declare local archivos="$1"
+
 	cantidadDeArchivos=0
+
 	for i in $archivos
 	do
+
 		cantidadDeArchivos=`expr $cantidadDeArchivos + 1`
+
 	done
 
 }
@@ -392,53 +464,11 @@ function obtener_cantidad
 function ordenar_archivos
 {
 
-	declare local archivosValidos=""
-
-	for file in $listaDeArchivos
-	do
-		if ! [[ $file =~ ^[a-zA-Z]{3}_[0-9]{8}$ ]];
-		then
-			$GRALOG "AFUMB" "Archivo Rechazado, $file tiene formato incorrecto" "WAR"
-			$MOVER_A "$ACEPDIR/$file" "$RECHDIR"
-			continue
-		fi
-		DATE=$(echo $file|cut -d'_' -f2 |cut -d'.' -f1)
-		
-		if ! (date -d $DATE >> /dev/null 2>&1)
-		then
-			$GRALOG "AFUMB" "Archivo Rechazado, $file fecha incorrecta" "WAR"
-			$MOVER_A "$ACEPDIR/$file" "$RECHDIR"
-			DIFERENCIA_DIAS="-10"
-			continue
-		else
-		DIFERENCIA_DIAS=$(( ($(date --date="$TODAY" +%s) - $(date --date="$DATE" +%s)  )/(60*60*24) ));
-		fi			
-
-		if [ "$DIFERENCIA_DIAS" -gt "$DIAS_LIMITE" ];
-		then
-			$GRALOG "AFUMB" "Archivo Rechazado, $file fecha superior a un anio" "WAR"
-			$MOVER_A "$ACEPDIR/$file" "$RECHDIR"
-			continue
-		fi
-
-		if [ "$DIFERENCIA_DIAS" -lt 0 ];
-		then 
-			$GRALOG "AFUMB" "Archivo Rechazado, $file fecha del futuro" "WAR"
-			$MOVER_A "$ACEPDIR/$file" "$RECHDIR"
-			continue
-		fi
-
-		archivosValidos="$archivosValidos $file"
-
-	done
-
-	obtener_cantidad "$archivosValidos"
+	obtener_cantidad "$listaDeArchivos"
 
 	$GRALOG "AFUMB" "Inicio de AFUMB. Cantidad de archivos a procesar: $cantidadDeArchivos" "INFO"
 
-	archivosValidos=` echo $archivosValidos | tr " " "\n" | sort -t '_' -k2 | tr "\n" " "`
-
-	listaDeArchivos=$archivosValidos
+	listaDeArchivos=` echo $listaDeArchivos | tr " " "\n" | sort -t '_' -k2 | tr "\n" " "`
 
 }
 
@@ -448,23 +478,76 @@ function obtener_archivos
 	existeDirectorio "$ACEPDIR"
 	declare local archivos=` ls $ACEPDIR`
 
-	for i in $archivos
+	IFS='
+'
+
+	for i in $ACEPDIR/*
 	do
+
+		i="${i##*/}"
+
 		#Puede haber directorios
 		if [ -f "$ACEPDIR/$i" ]
 		then
+
+			if ! [[ "$i" =~ ^[a-zA-Z]{3}_[0-9]{8}$ ]];
+			then
+
+				#$GRALOG "AFUMB" "Archivo Rechazado, $i Nombre invalido" "WAR"
+				$MOVER_A "$ACEPDIR/$i" "$RECHDIR"
+				continue
+
+			fi
+			DATE=$(echo "$i"|cut -d'_' -f2 |cut -d'.' -f1)
+		
+			if ! (date -d $DATE >> /dev/null 2>&1)
+			then
+
+				#$GRALOG "AFUMB" "Archivo Rechazado, $i fecha incorrecta" "WAR"
+				$MOVER_A "$ACEPDIR/$i" "$RECHDIR"
+				DIFERENCIA_DIAS="-10"
+				continue
+
+			else
+			DIFERENCIA_DIAS=$(( ($(date --date="$TODAY" +%s) - $(date --date="$DATE" +%s)  )/(60*60*24) ));
+			fi			
+
+			if [ "$DIFERENCIA_DIAS" -gt "$DIAS_LIMITE" ];
+			then
+
+				#$GRALOG "AFUMB" "Archivo Rechazado, $i fecha superior a un anio" "WAR"
+				$MOVER_A "$ACEPDIR/$i" "$RECHDIR"
+				continue
+
+			fi
+
+			if [ "$DIFERENCIA_DIAS" -lt 0 ];
+			then 
+
+				#$GRALOG "AFUMB" "Archivo Rechazado, $i fecha del futuro" "WAR"
+				$MOVER_A "$ACEPDIR/$i" "$RECHDIR"
+				continue
+
+			fi
+
 			listaDeArchivos="$listaDeArchivos $i"
+
 		fi
+
 	done
 
+	IFS=' '
+
 	ordenar_archivos
-	
+
 }
 
 #***************************Incio de AFUMB***************************
 LANG='en_US.ISO-8859-15'
 obtener_archivos
 archivosRechazados=0
+
+#Se lee cada archivo de llamada
 for archivo in $listaDeArchivos
 do
 	IDCentral="${archivo:0:3}"
@@ -476,62 +559,91 @@ do
 
 	existeDirectorio "$PROCDIR/$dirArchivosProcesados"
 
+	#Se verifica que el archivo a procesar no fue procesado previamente
 	if [ -f "$PROCDIR/$dirArchivosProcesados$archivo" ]
 	then
+
 		diferencia=`diff "$ACEPDIR/$archiv" "$PROCDIR/$dirArchivosProcesados$archivo"`
-		if [ "$diferencia" = ""  ]
+
+		if [ "$diferencia" == ""  ]
 		then
+
 			archivosRechazados=`expr $archivosRechazados + 1`
 			$GRALOG "AFUMB" "Se rechaza el archivo: $archivo por estar DUPLICADO" "WAR"
 			$MOVER_A "$ACEPDIR/$archivo" "$RECHDIR" "AFUMB"
 			continue
+
 		fi
+
 	fi
-	#Primer registro del archivo
+
+	#Se verifica el formato del primer registro del archivo
 	registro=`head -1 "$ACEPDIR/$archivo"`
 	verificar_registro "$registro"
-	if [ "$registroValido" = "" ]
+
+	if [ "$registroValido" == "" ]
 	then
+
 		archivosRechazados=`expr $archivosRechazados + 1`
 		$GRALOG "AFUMB" "Se rechaza el archivo: $archivo porque su estructura no se corresponde con el formato esperado." "WAR"
 		$MOVER_A "$ACEPDIR/$archivo" "$RECHDIR" "AFUMB"
 		continue
+
 	fi
 	$GRALOG "AFUMB" "Archivo a procesar: $archivo" "INFO"
 	IFS='
 '
-	for registro in `cat "$ACEPDIR/$archivo"`
+
+	#Se lee cada registro del archivo
+	while read registro
 	do
 		cantidadDeRegistros=`expr $cantidadDeRegistros + 1`
+		
+		#Se valida que la cantidad de campos del primer registro sea valida
 		validar_campos "$archivo" "$registro"
-		if [ "$camposValidos" = "NO" ]
+
+		if [ "$camposValidos" == "NO" ]
 		then
+
 			registrosRechazdos=`expr $registrosRechazdos + 1`
 			continue
+
 		fi
+
 		obtener_umbrales
+
+		#Si umbrales !="" entonces existen umbrales activos para la llamada
 		if [ "$umbrales" != "" ]
 		then
+
 			llamadasConUmbral=`expr $llamadasConUmbral + 1`
 			buscar_umbral
+
+			#Si la IDUmbral !="" entonces existe un umbral para la llamada
 			if [ "$IDUmbral" != ""  ]
 			then
+
 				llamadasSospechosas=`expr $llamadasSospechosas + 1`
 				grabar_llamada_sospechosa "$archivo" "$registro"
+
 			fi
 		else
+
 			llamadasSinUmbral=`expr $llamadasSinUmbral + 1`
+
 		fi
-	done
+
+	done < "$ACEPDIR/$archivo"
+
 	llamadasNoSospechosas=`expr $llamadasConUmbral - $llamadasSospechosas`
+
 	$GRALOG "AFUMB"	". Cantidad de llamadas: $cantidadDeRegistros: Rechazadas: $registrosRechazdos, Con umbral = $llamadasConUmbral, Sin umbral $llamadasSinUmbral . Cantidad de llamadas sospechosas: $llamadasSospechosas, no sospechosas: $llamadasNoSospechosas" "INFO"
 
 	$MOVER_A "$ACEPDIR/$archivo" "$PROCDIR/$dirArchivosProcesados" "AFUMB"
 	IFS=' '
+
 done
 
 archivosProcesados=`expr $cantidadDeArchivos - $archivosRechazados`
 $GRALOG "AFUMB" ". Cantidad de archivos procesados: $archivosProcesados. Cantidad de archivos rechazados: $archivosRechazados Fin de AFUMB" "INFO"
-#Hace falta??
-#IFS=' '
-#LANG='es_AR.UTF-8'
+
