@@ -61,56 +61,59 @@ function verificarInicializacionDeAmbiente() {
 }
 
 
-if [[ ($1 != "AFINI.sh") && ($1 != "AfInstal.sh") ]]
+if [[ ($1 != "AFINI.sh") && ($1 != "AFINSTAL.sh") ]]
 then
 	verificarInicializacionDeAmbiente
-	if [ "$status" -eq "0" ]
+fi
+
+if [ "$status" -eq "0" ]
+then
+
+	#Verifico que tenga un parametro
+	if [ $# -ne 1 ]
 	then
-
-
-		#Verifico que tenga un parametro
-		if [ $# -ne 1 ]
+		if [ "$1" != "AFLIST.pl" ]
 		then
+
 			echo "Se debe indicar un proceso a arrancar"
 			$GRALOG "Arrancar" "Se debe indicar un proceso a arrancar" "ERR"
-
 		else
-
-
-
 			#obtengo el pid
-			PID=`ps | grep "$1" | head -1 | awk '{print "$1" }'`
+			PID=`ps | grep "$@" | head -1 | awk '{print "$1" }'`
+			#ejecuto el proceso
+			./$@
+		fi
+	else
 
-			#Verifico que no este corriendo
-			if [[ $PID != "" ]]
+		#obtengo el pid
+		PID=`ps | grep "$1" | head -1 | awk '{print "$1" }'`
+
+		#Verifico que no este corriendo
+		if [[ $PID != "" ]]
+		then
+			echo Ya se esta ejecutando el proceso
+			$GRALOG "Arrancar" "Ya se esta ejecutando el proceso" "ERR"
+		else
+			#ejecuto el proceso
+			if [ $1 == "AFINSTAL.sh" ]
 			then
-				echo Ya se esta ejecutando el proceso
-				$GRALOG "Arrancar" "Ya se esta ejecutando el proceso" "ERR"
+				./$1
 			else
-
-				#ejecuto el proceso
-				if [ $1 == "AfInstal.sh" ]
+				if [ $1 = "AFINI.sh" ]
 				then
-					./$1
+					. $1
 				else
 
-					if [ $1 == "AFINI.sh" ]
-					then
-						. $1
+
+					nohup "$BINDIR/$1" > /dev/null 2>&1 &
+					PID=$!
+					#Verifico que se haya ejecutado correctamente
+					if [ "$PID" != "" ]; then
+						echo "El proceso $1 fue ejecutado con PID: $PID"
+						$GRALOG "Arrancar" "El proceso $1 fue ejecutado con PID: $PID" "INFO"
 					else
-
-
-						nohup "$BINDIR/$1" > /dev/null 2>&1 &
-						PID=$!
-
-						#Verifico que se haya ejecutado correctamente
-						if [ "$PID" != "" ]; then
-							echo "El proceso $1 fue ejecutado con PID: $PID"
-							$GRALOG "Arrancar" "El proceso $1 fue ejecutado con PID: $PID" "INFO"
-						else
-							echo "Ocurrio un error al ejecutar $1"
-							$GRALOG "Arrancar" "Ocurrio un error al ejecutar $1" "ERR"
-						fi
+						echo "Ocurrio un error al ejecutar $1"
+						$GRALOG "Arrancar" "Ocurrio un error al ejecutar $1" "ERR"
 					fi
 				fi
 			fi
