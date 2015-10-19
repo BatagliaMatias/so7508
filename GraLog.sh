@@ -63,6 +63,13 @@ case $PTYPE in
 		TYPE="-$WAR";;
 	[Ee] )
 		TYPE="-$ERR";;
+	"INFO" )
+		TYPE="-$INFO";;
+	"WAR" )
+		TYPE="-$WAR";;
+	"ERR" )
+		TYPE="-$ERR";;
+	
 	* )
 		TYPE="-$INFO";;  #INFORMACION por defecto
 esac
