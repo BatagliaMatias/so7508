@@ -32,17 +32,17 @@ $registrosResultantes=0;
 $printFlag=0;
 
 
-$querySelectionChoice = "";
-$filtroCentralesSelection = "";
-$filtroAgentesSelection = "";
-$filtroUmbralSelection = "";
-$filtroTipoLlamadaSelection = "";
-$filtroTiempoConversacionMinSelection = "";
-$filtroTiempoConversacionMaxSelection = "";
-$filtroNumOrigenSelection = "";
-$filtroNumDestinoSelection = "";
+$querySelectionChoice = "*";
+$filtroCentralesSelection = "*";
+$filtroAgentesSelection = "*";
+$filtroUmbralSelection = "*";
+$filtroTipoLlamadaSelection = "*";
+$filtroTiempoConversacionMinSelection = "0";
+$filtroTiempoConversacionMaxSelection = "99999";
+$filtroNumOrigenSelection = "*";
+$filtroNumDestinoSelection = "*";
 
-
+$archivoDeConsultasPreviasSelection= "*";
 
 
 
@@ -87,44 +87,7 @@ sub parseArguments()
 
 	if( $stats == 1 ) 
 	{
-		@aniomes= split(/,/,join(',',@aniomes));
-		loadHashes();
-		showFilterType();
-		while($statFilterType <1 or $statFilterType >3)
-		{
-			showErrorSelection();
-			showFilterType();
-		}
-		processFilterTypeSelection();
-		makeStatQuery();
-
-		showStatsMenu();
-		while($statChoice != 6)
-		{
-
-			if($statChoice >=1 or $statChoice <=5)
-			{
-
-				if($statChoice >=1 and $statChoice <= 3)
-				{
-					showRankingType();
-					while($statTypeRanking <1 or $statTypeRanking >3)
-					{
-						showErrorSelection();
-						showRankingType();
-					}
-
-				}
-				showStatsResult();				
-			}				
-			else
-			{
-				showErrorSeleccion();
-			}
-			showStatsMenu();
-		}
-
-		exit 1;
+		mainStat();
 	}
 
 
@@ -132,7 +95,15 @@ sub parseArguments()
 
 }
 
+####################################################################################################################
+#######################################   CONSULTAS  ###############################################################
+####################################################################################################################
 
+
+
+#Main del proceso de egneración de una consulta
+#Pre:
+#Pos:
 sub mainQuery()
 {
 	showQueryMenu();
@@ -142,6 +113,7 @@ sub mainQuery()
 }
 
 #Menu para mostrar las opciones de la Consulta
+#Pos: La variable queryChoice es seteada con un valor
 sub showQueryMenu()
 {
 print "\n\tINGRESE EL TIPO DE ARCHIVO DE ENTRADA
@@ -155,6 +127,11 @@ print "\n\tINGRESE EL TIPO DE ARCHIVO DE ENTRADA
 }
 
 
+#Se procesa la selección de la variable queryChoice
+#Pos 1: Si queryChoice = 1, se va a hacer uso de los archivos de llamadas sospechosas.
+#Pos 2: Si queryChoice = 2, se va hacer uso de los archivos que el usuario indique.
+#Pos 3: Si queryChoice = 3, sale del programa.
+#Pos 4: Si queryChoice es distinto 1,2 o 3, retorna al proceso principal de la consulta: mainQuery
 sub processQueryMenuSelection()
 {
 
@@ -164,76 +141,113 @@ sub processQueryMenuSelection()
 		mainQuery();
 	}
 
-
+	#Llamadas sospechosas (Oficinas y Aniomes)
 	if ($queryChoice == 1)
 	{
 		showQueryOficinaFilter();
-		@oficinas = split(' ',$oficinaFilterSelection);
-		@oficinasValidadas=();
-		foreach my $anOficina (@oficinas)
-		{
-			
-			if ((length($anOficina) == 3 and $anOficina =~ /[a-zA-Z0-9]/) or ($anOficina eq "*"))
-			{
-				push @oficinasValidadas, $anOficina;	
-			}
-
-		}
-		if(scalar(@oficinasValidadas) == 0)
-		{
-			showErrorBadFiles();
-			mainQuery();
-		}
-
 		showQueryAnioMesFilter();
-		@aniomeses = split(' ',$anioMesFilterSelection);
-		@aniomesesValidados=();
-		foreach my $anAniomes (@aniomeses)
+		@workFilesQuery=();
+
+		#Valido las oficinas
+		@oficinafechaAValidar=();
+		@oficinafechavalidadas=();
+		opendir(DIR,$procDir);
+
+		#Si se solicitaron todas las oficinas, se cargan en un vector todos los archivos 
+		# de llamadas sospechosas.
+		if($oficinasValidadas[0] eq "*")
 		{
-			if (validateDateFormatAnioMesDia($anAniomes) or ($anAniomes eq "*"))
+			my @filesOFTP = readdir(DIR);
+			closedir(DIR);
+
+			foreach (@filesOFTP)
 			{
-				push @aniomesesValidados, $anAniomes;	
+				my $aFile = $_;
+
+				if(fileSospechosasValid($aFile))
+				{
+					push @oficinafechaAValidar,$aFile;
+				}
 			}
 		}
-		if(scalar(@aniomesesValidados) == 0)
+		#Se valida que las oficinas existan en la carpeta de archivos de llamadas sospechosas y se los carga en un vector.
+		else
+		{
+			my @filesOFTP = readdir(DIR);
+			closedir(DIR);
+			foreach (@filesOFTP)
+			{
+				my $aFile = $_;
+				my $matched = 0;
+				$t =0;
+
+				while (($matched == 0) and ($t < scalar(@oficinasValidadas)))
+				{
+					
+					my $anOficina = substr $oficinasValidadas[$t], 0,3;
+					my $aFileOficina = substr $aFile,0,3;								
+
+					if( $aFileOficina eq $anOficina and fileSospechosasValid($aFile))
+					{
+						push @oficinafechaAValidar, $aFile;
+						$matched =1;
+					}
+					else
+					{
+						
+						$t++;;
+		
+					}
+				}
+			}
+		}
+		if(scalar(@oficinafechaAValidar) == 0)
 		{
 			showErrorBadFiles();
 			mainQuery();
-		}			
+		}
+
+		if($aniomesesValidados[0] eq '*')
+		{
+			@workFilesQuery = @oficinafechaAValidar;
+
+		}
+		else
+		{
+			foreach(@oficinafechaAValidar)
+			{
+				my $anOficinafechaAValidar = $_;
+				my $matchedd = 0;
+				my $j =0;
+				while ($matchedd == 0 and $j < scalar(@aniomesesValidados))
+				{
+					my $anAniomes = substr $aniomesesValidados[$j], 0,6;
+					my $anOficinafechaAValidarFecha = substr $anOficinafechaAValidar,4,6;
+
+					if( $anOficinafechaAValidarFecha eq $anAniomes)
+					{
+						push @workFilesQuery, $aFile;
+						$matchedd =1;
+					}
+					else
+					{
+						$j++;
+					}
+				}
+
+			}
+			if(scalar(@workFilesQuery) == 0)
+			{
+				showErrorBadFiles();
+				mainQuery();
+			}
+		
+		}
 
 	}
 	elsif ($queryChoice == 2)
 	{
-
-
-		showArchivosDeConsultasPrevias();
-		@workFilesQuery=();
-		@archivos = split(' ',$archivoDeConsultasPreviasSelection);
-
-		foreach (@archivos)
-		{
-			my $fileUser= $_;
-			opendir(DIR,$repoDir);
-			my @filesOFTP = readdir(DIR);
-			closedir(DIR);
-
-			foreach(@filesOFTP)
-			{
-				my $aRepoFile = $_;
-				if($aRepoFile eq $fileUser)
-				{
-					push @workFilesQuery, $aRepoFile;		
-				}
-			}
-		}
-
-		if(scalar(@workFilesQuery) == 0)
-		{
-			showErrorBadFiles();
-			mainQuery();
-			
-		}
-		
+		showArchivosDeConsultasPrevias();	
 	}
 	else
 	{
@@ -248,7 +262,24 @@ print "\n\tINGRESE LAS OFICINAS A FILTRAR SEPARADAS POR ESPACIOS
 	(PARA FILTRAR POR TODAS, INGRESE *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$oficinaFilterSelection = <>;
+	chomp($oficinaFilterSelection = <>);
+
+	@oficinas = split(' ',$oficinaFilterSelection);
+	@oficinasValidadas=();
+	foreach my $anOficina (@oficinas)
+	{
+		
+		if ((length($anOficina) == 3 and $anOficina =~ /[a-zA-Z0-9]/) or ($anOficina eq "*"))
+		{
+			push @oficinasValidadas, $anOficina;	
+		}
+
+	}
+	if(scalar(@oficinasValidadas) == 0)
+	{
+		showErrorBadFiles();
+		mainQuery();
+	}
 }
 
 sub showQueryAnioMesFilter()
@@ -257,7 +288,22 @@ print "\n\tINGRESE LAS FECHAS A FILTRAR SEPARADAS POR ESPACIOS (CON FORMATO AAAA
 	(PARA FILTRAR POR TODAS, INGRESE *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$anioMesFilterSelection = <>;
+	chomp($anioMesFilterSelection = <>);
+
+	@aniomeses = split(' ',$anioMesFilterSelection);
+	@aniomesesValidados=();
+	foreach my $anAniomes (@aniomeses)
+	{
+		if (validateDateFormatAnioMesDia($anAniomes) or ($anAniomes eq "*"))
+		{
+			push @aniomesesValidados, $anAniomes;	
+		}
+	}
+	if(scalar(@aniomesesValidados) == 0)
+	{
+		showErrorBadFiles();
+		mainQuery();
+	}			
 }
 
 
@@ -267,7 +313,53 @@ print "\n\tINGRESE LOS NOMBRES DE ARCHIVO DE CONSULTAS PREVIAS SEPARADOS
 	POR ESPACIOS (PARA FILTRAR POR TODOS, INGRESE *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$archivoDeConsultasPreviasSelection = <>;
+	chomp($archivoDeConsultasPreviasSelection = <>);
+
+	@workFilesQuery=();
+	@archivos = split(' ',$archivoDeConsultasPreviasSelection);
+
+					
+	if ($archivoDeConsultasPreviasSelection eq "*")
+	{
+		opendir(DIR,$repoDir);
+		my @filesOFTP = readdir(DIR);
+		closedir(DIR);
+
+		foreach(@filesOFTP)
+		{
+			my $aRepoFile = $_;
+			if(fileConsultaPreviaValid($aRepoFile))
+			{
+				push @workFilesQuery, $aRepoFile;		
+			}
+		}
+	}
+	else
+	{
+		foreach (@archivos)
+		{
+			my $fileUser= $_;
+			opendir(DIR,$repoDir);
+			my @filesOFTP = readdir(DIR);
+			closedir(DIR);
+
+			foreach(@filesOFTP)
+			{
+				my $aRepoFile = $_;
+				if($aRepoFile eq $fileUser and fileConsultaPreviaValid($aRepoFile))
+				{
+					push @workFilesQuery, $aRepoFile;		
+				}
+			}
+		}
+	}
+
+	if(scalar(@workFilesQuery) == 0)
+	{
+		showErrorBadFiles();
+		mainQuery();
+		
+	}
 
 }
 
@@ -275,15 +367,15 @@ print "\n\tINGRESE LOS NOMBRES DE ARCHIVO DE CONSULTAS PREVIAS SEPARADOS
 
 sub blankAllQuerySelection()
 {
-	$querySelectionChoice = "";
-	$filtroCentralesSelection = "";
-	$filtroAgentesSelection = "";
-	$filtroUmbralSelection = "";
-	$filtroTipoLlamadaSelection = "";
-	$filtroTiempoConversacionMinSelection = "";
-	$filtroTiempoConversacionMaxSelection = "";
-	$filtroNumOrigenSelection = "";
-	$filtroNumDestinoSelection = "";
+	$querySelectionChoice = "*";
+	$filtroCentralesSelection = "*";
+	$filtroAgentesSelection = "*";
+	$filtroUmbralSelection = "*";
+	$filtroTipoLlamadaSelection = "*";
+	$filtroTiempoConversacionMinSelection = "0";
+	$filtroTiempoConversacionMaxSelection = "99999";
+	$filtroNumOrigenSelection = "*";
+	$filtroNumDestinoSelection = "*";
 }
 
 sub showQuerySelection()
@@ -339,10 +431,11 @@ print "\n\tSELECCION DE CONSULTA
 	}
 	else
 	{
-	exit 0;
+		exit 0;
 	}		
 
-	
+	showQuerySelection();
+
 }
 
 
@@ -352,7 +445,7 @@ print "\n\tINGRESE LOS NOMBRES DE LAS CENTRALES SEPARADOS POR ESPACIOS
 	(PARA FILTRAR POR TODAS, INGRESE SOLAMENTE EL CARACTER *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroCentralesSelection = <>;
+	chomp($filtroCentralesSelection = <>);
 
 	my @centralesSel = split(' ',$filtroCentralesSelection);
 	@centralesValidados=();
@@ -362,7 +455,6 @@ print "\n\tINGRESE LOS NOMBRES DE LAS CENTRALES SEPARADOS POR ESPACIOS
 		{
 
 				push @centralesValidados, $aCentral;	
-
 		}
 	
 	}
@@ -370,15 +462,15 @@ print "\n\tINGRESE LOS NOMBRES DE LAS CENTRALES SEPARADOS POR ESPACIOS
 	if(scalar(@centralesValidados) == 0)
 	{
 		showErrorSelection();
-		$filtroCentralesSelection = "";
+		$filtroCentralesSelection = "*";
 	}
-	showQuerySelection();
+
 }
 
 sub validarCentralFilter
 {
 	my ($aCentral) = @_;
-	if(@centralesValidados[0]="*")
+	if($filtroCentralesSelection eq '*')
 	{
 		return 1;
 	}
@@ -388,7 +480,7 @@ sub validarCentralFilter
 		$i=0;
 		while( $encontroMatch ==0 && $i < scalar(@centralesValidados))
 		{
-			if($aCentral eq $centralesValidados[i])
+			if($aCentral eq $centralesValidados[$i])
 			{
 				return 1;
 			}
@@ -401,18 +493,13 @@ sub validarCentralFilter
 	}
 }
 
-sub cumpleTodasLasCondicionesDeFiltro()
-{
-
-return 1;
-}
 sub showAgenteFilterMenu()
 {
 print "\n\tINGRESE LOS NOMBRES DE LOS AGENTES SEPARADOS POR ESPACIOS
 	(PARA FILTRAR POR TODOS, INGRESE SOLAMENTE EL CARACTER *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroAgentesSelection = <>;
+	chomp($filtroAgentesSelection = <>);
 
 
 	my @agentesSel = split(' ',$filtroAgentesSelection);
@@ -429,10 +516,8 @@ print "\n\tINGRESE LOS NOMBRES DE LOS AGENTES SEPARADOS POR ESPACIOS
 	if(scalar(@agentesValidados) == 0)
 	{
 		showErrorSelection();
-		$filtroAgentesSelection = "";
+		$filtroAgentesSelection = "*";
 	}
-	showQuerySelection();
-
 
 }
 
@@ -440,7 +525,7 @@ print "\n\tINGRESE LOS NOMBRES DE LOS AGENTES SEPARADOS POR ESPACIOS
 sub validarAgenteFilter
 {
 	my ($aCentral) = @_;
-	if(@agentesValidados[0]="*")
+	if($filtroAgentesSelection eq '*')
 	{
 		return 1;
 	}
@@ -450,7 +535,7 @@ sub validarAgenteFilter
 		$i=0;
 		while( $encontroMatch ==0 && $i < scalar(@agentesValidados))
 		{
-			if($aCentral eq $agentesValidados[i])
+			if($aCentral eq $agentesValidados[$i])
 			{
 				return 1;
 			}
@@ -470,7 +555,7 @@ print "\n\tINGRESE LOS UMBRALES SEPARADOS POR ESPACIOS (PARA FILTRAR POR TODOS,
 	INGRESE SOLAMENTE EL CARACTER *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroUmbralSelection = <>;
+	chomp($filtroUmbralSelection = <>);
 
 
 	my @umbraSel = split(' ',$filtroUmbralSelection);
@@ -489,10 +574,8 @@ print "\n\tINGRESE LOS UMBRALES SEPARADOS POR ESPACIOS (PARA FILTRAR POR TODOS,
 	if(scalar(@umbralesValidados) == 0)
 	{
 		showErrorSelection();
-		$filtroUmbralSelection = "";
+		$filtroUmbralSelection = "*";
 	}
-	showQuerySelection();
-
 
 }
 
@@ -500,7 +583,7 @@ print "\n\tINGRESE LOS UMBRALES SEPARADOS POR ESPACIOS (PARA FILTRAR POR TODOS,
 sub validarUmbralFilter
 {
 	my ($aCentral) = @_;
-	if(@umbralesValidados[0]="*")
+	if($filtroUmbralSelection eq '*')
 	{
 		return 1;
 	}
@@ -510,7 +593,7 @@ sub validarUmbralFilter
 		$i=0;
 		while( $encontroMatch ==0 && $i < scalar(@umbralesValidados))
 		{
-			if($aCentral eq $umbralesValidados[i])
+			if($aCentral eq $umbralesValidados[$i])
 			{
 				return 1;
 			}
@@ -531,13 +614,13 @@ print "\n\tINGRESE LOS TIPOS DE LLAMADAS SEPARADOS POR ESPACIOS
 	(PARA FILTRAR POR TODOS, INGRESE SOLAMENTE EL CARACTER *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroTipoLlamadaSelection = <>;
+	chomp($filtroTipoLlamadaSelection = <>);
 
 	my @tiposSel = split(' ',$filtroTipoLlamadaSelection);
 	@tiposValidados=();
 	foreach my $unTipo (@tiposSel)
 	{
-		if ($unTipo == "DDI" or $unTipo == "DDN" or $unTipo == "LOC" or $unTipo == "*") 
+		if ($unTipo eq "DDI" or $unTipo eq "DDN" or $unTipo eq "LOC" or $unTipo eq "*") 
 		{
 			push @tiposValidados, $unTipo;		
 		}
@@ -546,17 +629,16 @@ print "\n\tINGRESE LOS TIPOS DE LLAMADAS SEPARADOS POR ESPACIOS
 	if(scalar(@tiposValidados) == 0)
 	{
 		showErrorSelection();
-		$filtroAgentesSelection = "";
+		$filtroTipoLlamadaSelection = "*";
 	}
-	showQuerySelection();
 
 }
 
 
-sub validarUmbralFilter
+sub validarTipoLlamada
 {
-	my ($aCentral) = @_;
-	if(@tiposValidados[0]="*")
+	my ($aTipo) = @_;
+	if($filtroTipoLlamadaSelection eq '*')
 	{
 		return 1;
 	}
@@ -566,7 +648,7 @@ sub validarUmbralFilter
 		$i=0;
 		while( $encontroMatch ==0 && $i < scalar(@tiposValidados))
 		{
-			if($aCentral eq $tiposValidados[i])
+			if($aTipo eq $tiposValidados[$i])
 			{
 				return 1;
 			}
@@ -586,7 +668,7 @@ sub showTiempoConvMinFilterMenu()
 print "\n\tINGRESE EL TIEMPO DE CONVERSACION MINIMO (El mínimo es 0)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroTiempoConversacionMinSelection = <>;
+	chomp($filtroTiempoConversacionMinSelection = <>);
 	
 	if($filtroTiempoConversacionMinSelection =~ /[0-9]/)
 	{
@@ -594,8 +676,7 @@ print "\n\tINGRESE EL TIEMPO DE CONVERSACION MINIMO (El mínimo es 0)
 	}else
 	{
 		showErrorSelection();
-		$filtroAgentesSelection = "";
-		showQuerySelection();
+		$filtroTiempoConversacionMinSelection = "0";
 	}
 	
 
@@ -609,21 +690,36 @@ sub showTiempoConvMaxFilterMenu()
 print "\n\tINGRESE EL TIEMPO DE CONVERSACION MAXIMO
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroTiempoConversacionMaxSelection = <>;
+	chomp($filtroTiempoConversacionMaxSelection = <>);
 
-	if($filtroTiempoConversacionMinSelection =~ /[0-9]/)
+	if($filtroTiempoConversacionMaxSelection =~ /[0-9]/)
 	{
 
 	}else
 	{
 		showErrorSelection();
-		$filtroAgentesSelection = "";
-		
+		$filtroTiempoConversacionMinSelection = "0";
+		$filtroTiempoConversacionMaxSelection = "99999";
 	}
-showQuerySelection();
-	
 
 }
+
+
+sub validarTiempoConv
+{
+	my ($aTiempoConv) = @_;
+	if( $filtroTiempoConversacionMinSelection <= $aTiempoConv and $aTiempoConv <= $filtroTiempoConversacionMaxSelection )
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
+
+}
+
 
 sub showNumeroOrigenFilterMenu()
 {
@@ -631,151 +727,145 @@ print "\n\tINGRESE LOS NUMEROS DE ORIGEN SEPARADOS POR ESPACIOS
 	(PARA FILTRAR POR TODOS, INGRESE *)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroNumOrigenSelection = <>;
+	chomp($filtroNumOrigenSelection = <>);
 
 
 	my @numOrigenSel = split(' ',$filtroNumOrigenSelection);
 	@numOrigenValidados=();
 	foreach my $unNum (@numOrigenSel)
 	{
-		if ($unNum =~ /[0-9]/) 
+		if (($unNum =~ /[0-9]/ and validarNumeroA($unNum) == 1) or ($unNum eq "*") )
 		{
 			push @numOrigenValidados, $unNum;		
 		}
 	}
 
-	if(scalar(@tiposValidados) == 0)
+	if(scalar(@numOrigenValidados) == 0)
 	{
 		showErrorSelection();
-		$filtroAgentesSelection = "";
+		$filtroNumOrigenSelection = "*";
 	}
-	showQuerySelection();
+}
+
+sub validarNumeroOrigenFilter
+{
+	my ($codAreaA) = @_[0];
+	my ($numA) = @_[1];
+	
+	if($filtroNumOrigenSelection eq '*')
+		{
+			return 1;
+		}
+		else
+		{
+			$encontroMatch = 0;
+			$i=0;
+			while($i < scalar(@numOrigenValidados))
+			{
+				if($codAreaA.$numA eq $numOrigenValidados[$i])
+				{
+					return 1;
+				}
+				else
+				{
+					$i++;
+				}
+			}
+			return 0;
+		}
+
 
 }
 
 sub showNumeroDestinoFilterMenu()
 {
-print "\n\tINGRESE LOS NUMEROS DE DESTINO SEPARADOS POR ESPACIOS
-	(PARA FILTRAR POR TODOS, INGRESE *)
+
+	my ($tllamada) ="";
+
+print "\n\tINGRESE EL CODIGO DE PAIS DEL NUMERO DE DESTINO
+	(DEJAR EN BLANCO EN CASO DE SER LOCAL O DDN)
 	-----------------------------------------------------------------------\n";
 	print "\tSELECCION ";
-	$filtroNumDestinoSelection = <>;
+	chomp($filtroCodPais = <>);
+
+	if (validarPais($filtroCodPais) == 0 and $filtroCodPais ne ""  )
+	{
+		showErrorPais();
+		return;
+	}
+
+	if($filtroCodPais eq ""  )
+	{
+print "\n\tINGRESE EL CODIGO DE AREA DEL NUMERO DE DESTINO
+	-----------------------------------------------------------------------\n";
+	print "\tSELECCION ";
+	chomp($filtroCodArea = <>);
+
+	if (validarArea($filtroCodArea) == 0) 
+	{
+		showErrorArea();
+		return;
+	}
+	$tLlamada="";
+	}
+	else
+	{
+		$tLlamada="DDI";
+	}
+
+print "\n\tINGRESE EL NUMERO DE LINEA DEL DESTINO
+	-----------------------------------------------------------------------\n";
+	print "\tSELECCION ";
+	chomp($filtroNumB = <>);
+
+
+	if(validarNumeroB($tLlamada,$filtroCodPais,$filtroCodArea,$filtroNumB) == 0)
+	{
+		showErrorSelection();
+		return;
+	}
+	else
+	{
+		$filtroNumDestinoSelection = $filtroCodPais.$filtroCodArea.$filtroNumB;
+	}
+
 
 }
 
-#TODO
-#sub validarTiempoConvMinFilter()
-#sub validarTiempoConvMaxFilter()
-#sub validarNumeroOrigenFilter()
-#sub validarNumeroDestinoFilter()
+sub validarNumeroDestinoFilter
+{
+
+	my ($codPais) = @_[0];
+	my ($codAreaB) = @_[1];
+	my ($numB) = @_[2];
+	
+	if(($filtroNumDestinoSelection eq '*') or ($filtroNumDestinoSelection eq $codPais.$codAreaB.$numB))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
+
+}
 
 #Realiza la consulta sobre los archivos solicitados
 sub getQuery()
 {
 	
-	$registrosResultantes=0;
-	if($queryChoice==1)
-	{	
-		@workFilesQuery=();
-		@oficinafechaAValidar=();
-		@oficinafechavalidadas=();
-		opendir(DIR,$procDir);
-		if($oficinasValidadas[0] eq "*")
-		{
-			my @filesOFTP = readdir(DIR);
-			closedir(DIR);
-			$oficinasValidadas=();
-			foreach (@filesOFTP)
-			{
-				my $aFile = $_;
-
-				if(fileSospechosasValid($aFile))
-				{
-
-					push @oficinafechaAValidar,$aFile;
-				}
-			}
-		}
-		else
-		{
-			my @filesOFTP = readdir(DIR);
-			closedir(DIR);
-			foreach (@filesOFTP)
-			{
-				my $aFile = $_;
-				#ver si esta en el vector de oficinas
-				my $matched = 0;
-				$o =0;
-
-				while (($matched == 0) and ($o < scalar(@oficinasValidadas)))
-				{
-					
-					my $anOficina = substr $oficinasValidadas[$o], 0,3;
-					my $aFileOficina = substr $aFile,0,3;								
-
-					if( $aFileOficina eq $anOficina and fileSospechosasValid($aFile))
-					{
-						push @oficinafechaAValidar, $aFile;
-						$matched =1;
-					}
-					else
-					{
-						
-						$o=$o+1;
-		
-					}
-				}
-			}
-		}
-		if(scalar(@oficinafechaAValidar) == 0)
-		{
-			showErrorBadFiles();
-			mainQuery();
-		}
-
-		if($aniomesesValidados[0] eq '*')
-		{
-			@workFilesQuery = @oficinafechaAValidar;
-
-		}
-		else
-		{
-			foreach(@oficinafechaAValidar)
-			{
-				my $anOficinafechaAValidar = $_;
-				my $matchedd = 0;
-				my $j =0;
-				while ($matchedd == 0 and $j < scalar(@aniomesesValidados))
-				{
-					my $anOficinafecha = substr $aniomesesValidados[$j], 0,6;
-					my $anOficinafechaAValidarFecha = substr anOficinafechaAValidar,4,6;
-					if( $anOficinafechaAValidarFecha eq $anOficinafecha)
-					{
-						push @workFilesQuery, $aFile;
-						$matchedd =1;
-					}
-					else
-					{
-						$j++;
-					}
-				}
-				if(scalar(@workFilesQuery) == 0)
-				{
-					showErrorBadFiles();
-					mainQuery();
-				}
-			}
-		
-		}
-
-	}
-
-
 	@arrayResultQuery =();
 	foreach(@workFilesQuery)
 	{
-		$workFilePath = $procDir."/".$_;
-		
+		if(queryChoice==1)
+		{
+			$workFilePath = $procDir."/".$_;
+		}
+		else
+		{
+			$workFilePath = $repoDir."/".$_;
+		}
 	
 		# Abro los archivos
 		open F_WORKFILEPATH, "<", "$workFilePath" or die "ERROR. EL ARCHIVO $workFilePath FUE ELIMINADO EN TIEMPO DE EJECUCION Y NO PUEDE SER ABIERTO";
@@ -785,11 +875,13 @@ sub getQuery()
 		while(my $line = <F_WORKFILEPATH>)
 		{
 			chomp;
-			($idCentral, $idAgente, $idUmbral, $tipoLlamada,$inicioLlamada,$tiempoLlamada,$codAreaA,$numA,$codPaisB,$codAreaB,$numB,$fechaArch) = 						split(";", $line);
-			if( validarCentralFilter($idCentral) ==1 and cumpleTodasLasCondicionesDeFiltro() == 1)
+			($idCentral, $idAgente, $idUmbral, $tipoLlamada,$inicioLlamada,$tiempoLlamada,$codAreaA,$numA,$codPaisB,$codAreaB,$numB,$fechaArch) = split(";", $line);
+			#print "A Validar $idUmbral: ",validarUmbralFilter($idUmbral), " tipo:  $tipoLlamada ",validarTipoLlamada($tipoLlamada), " tiempo $tiempoLlamada ",validarTiempoConv($tiempoLlamada)," numA: $codAreaA $numA ",validarNumeroOrigenFilter($codAreaA,$numA), " numbB: $codPaisB $codAreaB $numB ",validarNumeroDestinoFilter($codPaisB,$codAreaB,$numB),"\n";
+
+
+			if( validarCentralFilter($idCentral) ==1 and validarAgenteFilter($idAgente) and validarUmbralFilter($idUmbral) and validarTipoLlamada($tipoLlamada) and validarTiempoConv($tiempoLlamada) and validarNumeroOrigenFilter($codAreaA,$numA) and validarNumeroDestinoFilter($codPaisB,$codAreaB,$numB))
 			{
 				push @arrayResultQuery,$line;
-				$registrosResultantes++;
 			}
 
 			
@@ -799,7 +891,7 @@ sub getQuery()
 	}
 }
 
-
+#Devuelve el numero siguiente al número mayor del nombre de los archivos de subllamadas creados.
 sub getNextSubllamadaID()
 {
 	$lastId =0;
@@ -867,9 +959,171 @@ print "\n\tSE GENERO EL ARCHIVO $filename
 
 
 ####################################################################################################################
+###################################### Validaciones de campos  #####################################################
+
+#Valida que exista el codigo de area en el archivo de codigo de áreas
+sub validarArea
+{
+	my ($anArea) = @_;
+	my $matched = 0;
+
+# Abro los archivos de Destinos
+	open F_AREAS, "<", "$codAreas" or die "No se pudo abrir el archivo de $codAreas";
+
+
+	#Recorro secuencialmente los archivos
+	while(my $row = <F_AREAS> and $matched == 0)
+	{
+		chomp($row);
+		($descArea, $codArea) = split(";",$row);
+	
+		if($codArea eq $anArea)
+		{
+			$matched =1;
+		}
+	}
+	close (F_AREAS);
+
+	if ($matched == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
+}
+
+#Valida que exista el código de área en el archivo de códigos de País
+sub validarPais
+{
+	my ($aPais) = @_;
+	my $matched = 0;
+	open F_PAISES, "<", "$codPaises" or die "No se pudo abrir el archivo de $codPaises";
+
+	while(my $row = <F_PAISES> and $matched == 0)
+	{
+		chomp($row);
+		($codPais, $descPais) = split(";",$row);
+		if($codPais eq $aPais)
+		{
+			$matched =1;
+		}
+	}
+	close (F_PAISES);
+
+	if ($matched == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+#Valida si es un número valido, validando que sea un numero de 10 dígitos y validando que los 
+# primeros 2, 3 o 4 dígitos sean un número de área
+sub validarNumeroA
+{
+	my ($aNumb) = @_;
+
+	if(looks_like_number($aNumb) and length($aNumb) == 10)
+	{
+		$codArea2 = substr	$aNumb,0,2;
+		$codArea3 = substr	$aNumb,0,3;
+		$codArea4 = substr	$aNumb,0,4;
+		if( validarArea($codArea2) == 1 or validarArea($codArea3) == 1 or validarArea($codArea4) == 1)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+#Valida si es un número valido, y validando que los 
+#Pre: Se debe haber validado el tipo de codigo, codigo de pais y el codigo de area.
+#Parametros: 
+# 1) Tipo de Codigo
+# 2) Codigo de Pais
+# 3) Codigo de Area
+# 4) Numero de Linea B
+#Pos: Devuelve 1 si se cumple que:
+# contenga un numero
+# Si la llamada es DDI, no importa su longitud 
+# Si la llamada es LOC o DDN, la suma de digitos código de 
+# area+numero de línea debe ser de 10.
+sub validarNumeroB
+{
+	my ($tllamada) = @_[0];
+	my ($codPais) = @_[1];
+	my ($codArea) = @_[2];
+	my ($aNumb) = @_[3];
+
+	if(looks_like_number($aNumb))
+	{
+		if( $tllamada eq "DDI")
+		{
+			return 1;
+		}
+		elsif (length($codArea.$aNumb) == 10 )
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
+
+####################################################################################################################
 ####################################### ESTADISTICAS ###############################################################
 ####################################################################################################################
 
+
+
+sub mainStat()
+{
+		@aniomes= split(/,/,join(',',@aniomes));
+		loadHashes();
+		showFilterType();
+		while($statFilterType <1 or $statFilterType >3)
+		{
+			showErrorSelection();
+			showFilterType();
+		}
+		processFilterTypeSelection();
+		makeStatQuery();
+
+		showStatsMenu();
+		while($statChoice != 6)
+		{
+
+			if($statChoice >=1 or $statChoice <=5)
+			{
+
+				if($statChoice >=1 and $statChoice <= 3)
+				{
+					showRankingType();
+					while($statTypeRanking <1 or $statTypeRanking >3)
+					{
+						showErrorSelection();
+						showRankingType();
+					}
+
+				}
+				showStatsResult();				
+			}				
+			else
+			{
+				showErrorSeleccion();
+			}
+			showStatsMenu();
+		}
+
+		exit 1;
+}
 
 #Menu para mostrar las opciones de tipo de ranking
 sub showFilterType()
@@ -892,7 +1146,7 @@ sub processFilterTypeSelection()
 		while($dateValid == 0)
 		{
 			print "\tPeríodo (aaaamm): ";
-			$rangeOfaniomes[0] = <>;
+			chomp($rangeOfaniomes[0] = <>);
 			$dateValid = validateDateFormat($rangeOfaniomes[0]);
 			if($dateValid == 0)
 			{
@@ -903,12 +1157,12 @@ sub processFilterTypeSelection()
 	elsif($statFilterType==2)
 	{
 		my $dateValid=0;
-		while(dateValid==0)
+		while($dateValid==0)
 		{
 			while($dateValid==0)
 			{
 				print "\tPeríodo mínimo (aaaamm): ";
-				$rangeOfaniomes[0] = <>;
+				chomp($rangeOfaniomes[0] = <>);
 				$dateValid= validateDateFormat($rangeOfaniomes[0]);
 				if($dateValid == 0)
 				{
@@ -916,22 +1170,18 @@ sub processFilterTypeSelection()
 				}
 			}
 			$dateValid = 0;
-			while($dateValid==0 or $dateValid==1)
+			while($dateValid==0)
 			{
 				print "\tPeríodo de máximo (aaaamm): ";
-				$rangeOfaniomes[1] = <>;
+				chomp($rangeOfaniomes[1] = <>);
 				$dateValid= validateDateFormat($rangeOfaniomes[1]);
 				if($dateValid == 0)
 				{
 					showErrorFormatDate();
-				}
-				elsif($rangeOfaniomes[0] >$rangeOfaniomes[1])
-				{
-					showErrorFormatSecondDate();
-					$dateValid==1;
-				}else
-				{
-					$dateValid=2
+					if($rangeOfaniomes[0] >$rangeOfaniomes[1])
+					{
+						showErrorFormatSecondDate();
+					}
 				}
 			}
 		}
@@ -1062,7 +1312,7 @@ sub makeStatQuery()
 		my $aFile = $_;
 		if(fileSospechosasValid($aFile) and fileMatchAnioMesFilter($aFile))
 		{
-			push @workFiles, $aFile;		
+			push @workFiles, $aFile;
 		}
 	}
 
@@ -1071,7 +1321,6 @@ sub makeStatQuery()
 		my $aFile = $_;
 		my $idOficina = substr $aFile, 0, 3;
 		$workFilePath = $procDir."/".$aFile;
-		# Abro los archivos de Umbrales
 		open F_WORKFILEPATH, "<", "$workFilePath" or die "No se pudo abrir el archivo de $workFilePath";
 
 
@@ -1091,7 +1340,7 @@ sub makeStatQuery()
 			$oficinasHash{$idOficina}[0]=$oficinasHash{$idOficina}[0]+$tiempoLlamada;
 			$oficinasHash{$idOficina}[1]++;
 
-			if($tipoLlamada == "DDI")
+			if($tipoLlamada eq "DDI")
 			{
 				$destinosHash{$codPaisB."P"}[1]++;
 			}
@@ -1100,7 +1349,7 @@ sub makeStatQuery()
 				$destinosHash{$codAreaB."A"}[1]++;
 			}
 
-			$umbralesHash{$idUmbral}++;
+			$umbralesHash{$idUmbral}[0]++;
 		}
 
 
@@ -1162,6 +1411,11 @@ print "\n\tTIPO DE RANKING
 
 sub showStatsResult()
 {
+	if($writeToFileFlag == 1)
+	{
+		saveStatsResult();		
+	}	
+
 	if($statChoice == 1)
 	{showCentralesResult();}
 elsif($statChoice == 2){showOficinasResult();}
@@ -1173,11 +1427,7 @@ elsif($statChoice == 5){showUmbralesResult();}
 
 sub showCentralesResult()
 {
-	if($writeToFileFlag == 1)
-	{
-		saveStatsResult();		
-	}	
-					
+			
 	if($statTypeRanking==1)
 	{
 		foreach my $idCentral (sort {$centralesHash{$b}[1] <=> $centralesHash{$a}[1]} keys %centralesHash) {
@@ -1252,11 +1502,7 @@ print "\n\tSE GENERO EL ARCHIVO $nombreArchivoStat
 
 sub showOficinasResult()
 {
-if($writeToFileFlag == 1)
-	{
-		saveStatsResult();		
-	}	
-					
+		
 	if($statTypeRanking==1)
 	{
 		foreach my $idOfic (sort {$oficinasHash{$b}[0] <=> $oficinasHash{$a}[0]} keys %oficinasHash) {
@@ -1323,10 +1569,6 @@ print "\n\tSE GENERO EL ARCHIVO $nombreArchivoStat
 
 sub showAgentesResult()
 {
-	if($writeToFileFlag == 1)
-	{
-		saveStatsResult();		
-	}	
 					
 	if($statTypeRanking==1)
 	{
@@ -1410,12 +1652,14 @@ sub showDestinosResult()
 		{
 			my $filename = $repoDir."/".$nombreArchivoStat;
 			open(my $fh, '>>', $filename) or die "Could not open file '$filename' $!";
-			print $fh print "Id destino: " . (chop $idDestino) . ", Desc: ". $desc." Tiempo: " . $tiempo."\n";
+			(chop $idDestino) ;
+			print $fh print "Id destino: " . $idDestino . ", Desc: ". $desc." Tiempo: " . $tiempo."\n";
 			close $fh;
 		}
 		else
 		{
-			print "Id destino: " . (chop $idDestino) . ", Desc: ". $desc." Tiempo: " . $tiempo."\n";	
+			(chop $idDestino) ;
+			print "Id destino: " . $idDestino . ", Desc: ". $desc." Tiempo: " . $tiempo."\n";	
 		}
 	}
 
@@ -1423,7 +1667,9 @@ sub showDestinosResult()
 
 sub showUmbralesResult()
 {
-	foreach my $idUmbral (sort {$umbralesHash{$b}[0] <=> $umbralesHash{$a}[0]} keys %umbralesHash) {
+	my ($cantUmbralesMayoresAUnaLlamada) = 0;
+	foreach my $idUmbral (sort {$umbralesHash{$b}[0] <=> $umbralesHash{$a}[0]} keys %umbralesHash) 
+	{
 		my $cant=$umbralesHash{$idUmbral}[0];
 		if ($cant > 1)
 		{
@@ -1438,13 +1684,51 @@ sub showUmbralesResult()
 			{
 				print "Id Umbral: " . $idUmbral.", Cantidad: " . $cant.  "\n";	
 			}
+			$cantUmbralesMayoresAUnaLlamada++;
 		}
+		
+	}
+	if($cantUmbralesMayoresAUnaLlamada == 0) 
+	{
+		if($writeToFileFlag == 1)
+		{
+			my $filename = $repoDir."/".$nombreArchivoStat;
+			open(my $fh, '>>', $filename) or die "Could not open file '$filename' $!";
+			print $fh "NO SE ENCONTRARON UMBRALES CON MÁS DE 1 LLAMADA";
+			close $fh;
+		}
+		else
+		{
+print "\n\t-----------------------------------------------------------------------
+		NO SE ENCONTRARON UMBRALES CON MÁS DE 1 LLAMADA
+		-----------------------------------------------------------------------"
+		}	
 	}
 
 }
 
 
+sub fileConsultaPreviaValid()
+{
+	my ($file) = @_;
 
+	if(length($file) != 14)
+	{
+		return 0;
+	}
+
+	my $subllamada = substr $file, 0, 11;
+	my $idFile = substr $file, 11, 3;
+	
+	if( $subllamada eq "subllamada." and $idFile < getNextSubllamadaID())
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
 
 sub fileSospechosasValid()
 {
@@ -1458,7 +1742,7 @@ sub fileSospechosasValid()
 	my $underScore = substr $file, 3, 1;
 	my $aDate= substr $file, 4,8;
 	
-	if( validateOficinaFormat($oficina) == 1 and $underScore = "_" and validateDateFormatAnioMesDia($aDate) == 1)
+	if( validateOficinaFormat($oficina) == 1 and $underScore eq "_" and validateDateFormatAnioMesDia($aDate) == 1)
 	{
 		return 1;
 	}
@@ -1489,7 +1773,7 @@ sub fileMatchAnioMesFilter()
 
 		if($statFilterType ==1)
 		{	
-			if ($rangeAnio == $anio and $rangeMes == $mes)
+			if ($rangeAnio eq $anio and $rangeMes eq $mes)
 			{
 				return 1;
 			}
@@ -1502,7 +1786,7 @@ sub fileMatchAnioMesFilter()
 		{
 			my $rangeAnioMax= substr $rangeOfaniomes[1], 0,4;
 			my $rangeMesMax = substr $rangeOfaniomes[1], 4,2;
-			if ($rangeAnio >= $anio and $rangeMes >= $mes and $rangeAnioMax <= $anio and $rangeMesMax <= $mes)
+			if ($rangeAnio <= $anio and $rangeMes <= $mes and $anio <= $rangeAnioMax and $mes <= $rangeMesMax )
 			{
 				return 1;
 			}
@@ -1513,6 +1797,10 @@ sub fileMatchAnioMesFilter()
 		}	
 	}
 }
+
+
+
+
 
 sub validateOficinaFormat()
 {
@@ -1569,7 +1857,7 @@ sub validateDateFormat()
 {
 	my ($aDate) = @_;
 
-	if(length($aDate) != 7)
+	if(length($aDate) != 6)
 	{
 		return 0;
 	}
@@ -1586,8 +1874,25 @@ sub validateDateFormat()
 		return 0;
 	}
 	
-	return 2;
+	return 1;
 	
+}
+
+
+sub showErrorPais()
+{
+print "\n\t-----------------------------------------------------------------------
+	SELECCION INCORRECTA - NO EXISTEN PAISES CON ESE CODIGO
+	-----------------------------------------------------------------------\n";
+
+}
+
+sub showErrorArea()
+{
+print "\n\t-----------------------------------------------------------------------
+	SELECCION INCORRECTA - NO EXISTEN AREAS CON ESE CODIGO
+	-----------------------------------------------------------------------\n";
+
 }
 
 
