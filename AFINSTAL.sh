@@ -177,15 +177,15 @@ function getDirectoryPath(){
 	do
 		read -p "$msj" pathTemp	
 		#echo "de nuevo: $pathTemp"
-		if [ -z $pathTemp ]
+		if [ -z "$pathTemp" ]
 		then
 			pathTemp=$pathDefault
 		else
 			#pathTemp=$(echo $pathTemp | grep '^/.*$' )
 			#Valido caracteres alfanumericos en path
-			pathTemp=$(echo $pathTemp | grep '^/[a-zA-Z0-9]*$' )
+			pathTemp=$(echo "$pathTemp" | grep '^/[a-zA-Z0-9]*$' )
 			#valido que no se pueda seleccionar el directorio conf
-			pathTemp=$(echo $pathTemp | grep -v '^/conf$' )
+			pathTemp=$(echo "$pathTemp" | grep -v '^/conf$' )
 			if [ ! -z "$pathTemp" -a "$pathTemp" != " " ]
 			then	
 				pathTemp=$GRUPO$pathTemp	
@@ -369,6 +369,15 @@ function executeInstaler(){
 
 	echo "Instalación CONCLUIDA"
 	log "Installer" "Instalación CONCLUIDA" "I"
+	
+	#Elimino Archivos
+	#rm -rf ./Datos
+	#rm -rf $CONFDIR
+	#rm *.sh
+	#rm *.pl
+	#rm *.md
+	
+	
 }
 
 
